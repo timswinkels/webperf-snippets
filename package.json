@@ -12,7 +12,10 @@
     "install-skills": "node scripts/install-skills.js",
     "install-global": "node scripts/install-global.js",
     "install-from-release": "node scripts/install-from-release.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "validate": "npm run lint && npm run build",
+    "test": "echo \"No tests configured\""
   },
   "keywords": [
     "webperf",

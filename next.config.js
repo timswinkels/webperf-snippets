@@ -5,6 +5,18 @@ const withNextra = require('nextra')({
 })
 
 module.exports = withNextra({
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+    ];
+  },
   webpack(config) {
     const snippetsDir = path.join(__dirname, 'snippets')
 

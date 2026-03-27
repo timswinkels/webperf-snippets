@@ -182,10 +182,6 @@
       });
     }
 
-    const durations2 = allInteractions.map((i) => i.duration);
-    const worst2 = Math.max(...durations2);
-    const avg2 = Math.round(durations2.reduce((a, b) => a + b, 0) / durations2.length);
-    const p75 = Math.round(durations2.sort((a, b) => a - b)[Math.floor(durations2.length * 0.75)]);
     const byRating = {
       good: allInteractions.filter((i) => i.rating === "good").length,
       "needs-improvement": allInteractions.filter((i) => i.rating === "needs-improvement").length,
@@ -198,9 +194,9 @@
       count: allInteractions.length,
       details: {
         totalInteractions: allInteractions.length,
-        worstMs: Math.round(worst2),
-        avgMs: avg2,
-        p75Ms: p75,
+        worstMs: Math.round(worst),
+        avgMs: Math.round(avg),
+        p75Ms: Math.round(p75),
         byRating,
       },
       items: allInteractions.map((i) => ({
