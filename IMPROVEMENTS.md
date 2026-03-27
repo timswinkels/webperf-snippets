@@ -74,7 +74,7 @@ Line 11: replace `style={{ width: "200px" }}` with a responsive CSS approach (ma
 
 ---
 
-## Phase 3 — Project documentation `[ ]`
+## Phase 3 — Project documentation `[x]`
 
 **Problem:** No contributor guide, no version history.
 
