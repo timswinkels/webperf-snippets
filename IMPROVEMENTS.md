@@ -102,7 +102,7 @@ Use [Keep a Changelog](https://keepachangelog.com) format.
 
 ---
 
-## Phase 4 — SEO enhancements `[ ]`
+## Phase 4 — SEO enhancements `[x]`
 
 **Problem:** Good base SEO (OG, Twitter cards, sitemap) but missing structured data for individual pages.
 

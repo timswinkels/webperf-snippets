@@ -1,10 +1,20 @@
 import Script from "next/script";
+import Head from "next/head";
+import dynamic from "next/dynamic";
 import "../styles/globals.css";
 import { WebMCP } from "../components/WebMCP";
+
+const PageSchema = dynamic(
+  () => import("../components/PageSchema").then((m) => m.PageSchema),
+  { ssr: false }
+);
 
 function WebPerfSnippets({ Component, pageProps }) {
   return (
     <>
+      <Head>
+        <PageSchema />
+      </Head>
       <WebMCP />
       <Component {...pageProps} />
       <Script
