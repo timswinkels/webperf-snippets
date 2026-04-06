@@ -2,9 +2,21 @@
 
 A curated collection of JavaScript snippets to measure and debug Web Performance directly in your browser's DevTools console.
 
+[![CI](https://github.com/nucliweb/webperf-snippets/actions/workflows/ci.yml/badge.svg)](https://github.com/nucliweb/webperf-snippets/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/nucliweb/webperf-snippets)](https://github.com/nucliweb/webperf-snippets/releases)
+[![Snippets](https://img.shields.io/badge/snippets-47-0f766e)](https://webperf-snippets.nucliweb.net)
+[![License](https://img.shields.io/github/license/nucliweb/webperf-snippets)](./LICENSE)
 [![Star History](https://img.shields.io/github/stars/nucliweb/webperf-snippets?style=social)](https://star-history.com/#nucliweb/webperf-snippets&Date)
 
 ![WebPerf Snippets](https://github.com/nucliweb/webperf-snippets/assets/1307927/f47f3049-34f5-407c-896a-d26a30ddf344)
+
+## Start here
+
+- Measure your first page: start with [LCP](https://webperf-snippets.nucliweb.net/CoreWebVitals/LCP), [CLS](https://webperf-snippets.nucliweb.net/CoreWebVitals/CLS), and [INP](https://webperf-snippets.nucliweb.net/CoreWebVitals/INP).
+- Investigate slow loading: continue with [TTFB](https://webperf-snippets.nucliweb.net/Loading/TTFB), [FCP](https://webperf-snippets.nucliweb.net/Loading/FCP), and [render-blocking resources](https://webperf-snippets.nucliweb.net/Loading/Find-render-blocking-resources).
+- Debug interaction issues: use [Long Animation Frames](https://webperf-snippets.nucliweb.net/Interaction/Long-Animation-Frames) and [Scroll Performance](https://webperf-snippets.nucliweb.net/Interaction/Scroll-Performance).
+- Audit media-heavy pages: open [Image Element Audit](https://webperf-snippets.nucliweb.net/Media/Image-Element-Audit) and [Video Element Audit](https://webperf-snippets.nucliweb.net/Media/Video-Element-Audit).
+- Automate the workflow with agents: see [SKILLS.md](./SKILLS.md) and the installation section below.
 
 ## What you can measure
 
