@@ -19,7 +19,7 @@
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
 
@@ -58,7 +58,7 @@
           if (parent.matches(selector)) {
             return { hidden: true, reason: selector, container: getSelector(parent) };
           }
-        } catch (e) {}
+        } catch {}
       }
       parent = parent.parentElement;
     }
@@ -193,7 +193,14 @@
     // Below the fold images
     if (results.belowFold.length > 0) {
       console.group(`📍 Below The Fold (${results.belowFold.length} images)`);
-      const tableData = results.belowFold.slice(0, 20).map(({ element, fullSrc, ...rest }) => rest);
+      const tableData = results.belowFold.slice(0, 20).map((img) => ({
+        selector: img.selector,
+        src: img.src,
+        dimensions: img.dimensions,
+        size: img.size,
+        sizeFormatted: img.sizeFormatted,
+        distanceFromViewport: img.distanceFromViewport,
+      }));
       console.table(tableData);
       if (results.belowFold.length > 20) {
         console.log(`... and ${results.belowFold.length - 20} more images`);
@@ -207,7 +214,15 @@
       console.group(`🔒 In Hidden Containers (${results.hiddenContainers.length} images)`);
       console.log("Images in tabs, modals, carousels, or other hidden elements:");
       console.log("");
-      const tableData = results.hiddenContainers.slice(0, 15).map(({ element, fullSrc, distanceFromViewport, ...rest }) => rest);
+      const tableData = results.hiddenContainers.slice(0, 15).map((img) => ({
+        selector: img.selector,
+        src: img.src,
+        dimensions: img.dimensions,
+        size: img.size,
+        sizeFormatted: img.sizeFormatted,
+        hiddenReason: img.hiddenReason,
+        container: img.container,
+      }));
       console.table(tableData);
       if (results.hiddenContainers.length > 15) {
         console.log(`... and ${results.hiddenContainers.length - 15} more images`);

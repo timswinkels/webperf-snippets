@@ -103,10 +103,6 @@
     normalizeFontFamily(f.name.replace(/\.(woff2?|ttf|otf|eot)$/i, ""))
   );
 
-  const loadedFamilies = uniqueLoadedFonts.map((f) =>
-    normalizeFontFamily(f.family)
-  );
-
   const usedFamilies = usedFonts.map((f) => normalizeFontFamily(f.family));
 
   // Fonts preloaded but not used above the fold

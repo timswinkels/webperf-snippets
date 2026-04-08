@@ -19,7 +19,7 @@
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
 
@@ -54,7 +54,7 @@
       if (entry && entry.transferSize) {
         return (entry.transferSize / 1024).toFixed(1) + " KB";
       }
-    } catch (err) {}
+    } catch {}
     return null;
   }
 
@@ -189,10 +189,19 @@
 
     // Table of all problematic images
     console.group("📋 Lazy Loaded Images in Viewport");
-    const tableData = results.lazyImages.map(({ element, area, position, ...rest }) => ({
-      ...rest,
-      top: position.top + "px",
-      isLcpCandidate: rest.isLcpCandidate ? "⚠️ YES" : "no"
+    const tableData = results.lazyImages.map((image) => ({
+      selector: image.selector,
+      lazyType: image.lazyType,
+      dimensions: image.dimensions,
+      top: image.position.top + "px",
+      distanceFromEdge: image.distanceFromEdge,
+      src: image.src,
+      srcset: image.srcset,
+      sizes: image.sizes,
+      alt: image.alt,
+      fetchPriority: image.fetchPriority,
+      fileSize: image.fileSize,
+      isLcpCandidate: image.isLcpCandidate ? "⚠️ YES" : "no",
     }));
     console.table(tableData);
     console.groupEnd();
@@ -233,7 +242,20 @@
       withDataSrc: results.summary.withDataSrc,
       lcpAffected: results.summary.lcpAffected,
     },
-    items: results.lazyImages.map(({ element, area, ...rest }) => rest),
+    items: results.lazyImages.map((image) => ({
+      selector: image.selector,
+      lazyType: image.lazyType,
+      dimensions: image.dimensions,
+      position: image.position,
+      distanceFromEdge: image.distanceFromEdge,
+      src: image.src,
+      srcset: image.srcset,
+      sizes: image.sizes,
+      alt: image.alt,
+      fetchPriority: image.fetchPriority,
+      fileSize: image.fileSize,
+      isLcpCandidate: image.isLcpCandidate,
+    })),
     issues: [
       ...(results.summary.lcpAffected ? [{ severity: "error", message: 'LCP candidate image has lazy loading — remove loading="lazy" and add fetchpriority="high"' }] : []),
       ...(results.lazyImages.filter(i => !i.isLcpCandidate).length > 0 ? [{ severity: "warning", message: `${results.lazyImages.filter(i => !i.isLcpCandidate).length} above-fold image(s) have lazy loading — remove loading="lazy"` }] : []),

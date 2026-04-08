@@ -207,8 +207,6 @@
   // Recommendations
   const hasDocumentNavigation = documentNavigations.length > 0;
   const hasSameOriginRedirect = sameOrigin && referrerPath !== currentPath && referrerPath !== '';
-  const hasHighImpact = hasDocumentNavigation && documentNavigations.reduce((sum, nav) => sum + nav.duration, 0) > 1000;
-
   if (hasDocumentNavigation || serverRedirects > 0) {
     console.log('');
     console.log('%c💡 Recommendations:', 'font-weight: bold;');

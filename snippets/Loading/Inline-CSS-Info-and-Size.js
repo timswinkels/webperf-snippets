@@ -75,8 +75,8 @@
     contentMap.get(normalized).push(s.index);
   });
   const duplicates = Array.from(contentMap.entries())
-    .filter(([_, indices]) => indices.length > 1)
-    .map(([_, indices]) => indices);
+    .filter(([, indices]) => indices.length > 1)
+    .map(([, indices]) => indices);
 
   // Rating based on total size
   let rating, ratingColor;

@@ -76,7 +76,7 @@
             '      💡 Enable with: registration.navigationPreload.enable()'
           );
         }
-      } catch (_) {
+      } catch {
         // Access may be restricted
       }
     }
@@ -183,7 +183,7 @@
         }
         console.log(`   Total entries: ${totalEntries}`);
       }
-    } catch (_) {
+    } catch {
       // Cross-origin restrictions may prevent cache access
     }
   }

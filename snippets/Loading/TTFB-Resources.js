@@ -51,12 +51,12 @@
   // Table (sorted by TTFB, slowest first)
   console.log("");
   console.log("%cResources (sorted by TTFB, slowest first):", "font-weight: bold;");
-  const tableData = resourcesData.slice(0, 25).map(({ fullUrl, ...rest }) => ({
-    "TTFB (ms)": rest.ttfb.toFixed(0),
-    "Duration (ms)": rest.duration.toFixed(0),
-    Type: rest.type,
-    "3rd Party": rest.thirdParty ? "Yes" : "",
-    Resource: rest.resource,
+  const tableData = resourcesData.slice(0, 25).map((resource) => ({
+    "TTFB (ms)": resource.ttfb.toFixed(0),
+    "Duration (ms)": resource.duration.toFixed(0),
+    Type: resource.type,
+    "3rd Party": resource.thirdParty ? "Yes" : "",
+    Resource: resource.resource,
   }));
   console.table(tableData);
 

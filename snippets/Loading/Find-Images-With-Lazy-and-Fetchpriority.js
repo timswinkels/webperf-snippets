@@ -19,7 +19,7 @@
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
 
@@ -87,12 +87,18 @@
     });
 
     console.log("%c📋 Conflicting Elements:", "font-weight: bold;");
-    console.table(tableData.map(({ element, ...rest }) => rest));
+    console.table(tableData.map((item) => ({
+      selector: item.selector,
+      dimensions: item.dimensions,
+      inViewport: item.inViewport,
+      isLcpCandidate: item.isLcpCandidate,
+      src: item.src,
+    })));
 
     // Elements for inspection
     console.log("");
     console.log("%c🔎 Elements for inspection:", "font-weight: bold;");
-    tableData.forEach(({ element, selector, isLcpCandidate }, i) => {
+    tableData.forEach(({ element, isLcpCandidate }, i) => {
       const marker = isLcpCandidate === "⚠️ Yes" ? " 🚨 LCP" : "";
       console.log(`${i + 1}.${marker}`, element);
     });
