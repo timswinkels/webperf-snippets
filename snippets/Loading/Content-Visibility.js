@@ -36,7 +36,7 @@ function detectContentVisibility() {
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {
+    } catch {
       // Do nothing...
     }
     return sel;
@@ -188,7 +188,7 @@ function analyzeContentVisibilityOpportunities(options = {}) {
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
 
@@ -271,7 +271,13 @@ function analyzeContentVisibilityOpportunities(options = {}) {
     console.log("");
 
     // Show table without element reference
-    const tableData = opportunities.slice(0, 20).map(({ element, ...rest }) => rest);
+    const tableData = opportunities.slice(0, 20).map((opportunity) => ({
+      selector: opportunity.selector,
+      height: opportunity.height,
+      distanceFromViewport: opportunity.distanceFromViewport,
+      childElements: opportunity.childElements,
+      estimatedSavings: opportunity.estimatedSavings,
+    }));
     console.table(tableData);
 
     if (opportunities.length > 20) {
@@ -304,12 +310,20 @@ function analyzeContentVisibilityOpportunities(options = {}) {
   console.groupEnd();
 
   return {
-    opportunities: opportunities.map(({ element, ...rest }) => rest),
+    opportunities: opportunities.map((opportunity) => ({
+      selector: opportunity.selector,
+      height: opportunity.height,
+      distanceFromViewport: opportunity.distanceFromViewport,
+      childElements: opportunity.childElements,
+      estimatedSavings: opportunity.estimatedSavings,
+    })),
     totalElements: opportunities.length,
     highImpact: opportunities.filter((o) => o.estimatedSavings.startsWith("High")).length,
     elements: opportunities.map((o) => o.element),
   };
 }
+
+window.analyzeContentVisibilityOpportunities = analyzeContentVisibilityOpportunities;
 
 // Run detection
 (() => {

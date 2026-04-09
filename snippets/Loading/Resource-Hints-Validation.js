@@ -395,8 +395,8 @@
     .filter(([domain, count]) => count >= 2 && !hintedDomains.has(domain))
     .sort((a, b) => b[1] - a[1]);
 
-  const topPreconnects = missingHints.filter(([_, count]) => count >= 5).slice(0, 3);
-  const topDnsPrefetch = missingHints.filter(([_, count]) => count >= 2 && count < 5).slice(0, 5);
+  const topPreconnects = missingHints.filter(([, count]) => count >= 5).slice(0, 3);
+  const topDnsPrefetch = missingHints.filter(([, count]) => count >= 2 && count < 5).slice(0, 5);
   const shownHints = [...topPreconnects, ...topDnsPrefetch];
 
   if (missingHints.length > 0) {

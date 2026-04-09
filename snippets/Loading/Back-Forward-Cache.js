@@ -412,7 +412,7 @@
 
   // Initialize
   checkRestoration();
-  const eligibility = testEligibility();
+  testEligibility();
 
   // Display after a short delay to ensure pageshow event fires
   setTimeout(() => {

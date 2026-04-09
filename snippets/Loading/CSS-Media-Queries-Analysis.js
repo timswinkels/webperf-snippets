@@ -142,14 +142,14 @@ async function analyzeCSSMediaQueries(minWidth = 768) {
           }
         });
       }
-    } catch (e) {
+    } catch {
       // If CORS blocked, try to fetch the CSS
       if (sheet.href) {
         try {
           const response = await fetch(sheet.href);
           const cssText = await response.text();
           parseMediaQueriesFromCSS(cssText, sheet.href, false);
-        } catch (fetchError) {
+        } catch {
           // Silently count CORS blocked files
           corsBlockedCount++;
         }
@@ -484,6 +484,8 @@ async function analyzeCSSPerformanceImpact(minWidth = 768) {
     estimatedConversionLift: ((midRangeTotalBlocking * 0.6) / 100).toFixed(2) + "%",
   };
 }
+
+window.analyzeCSSPerformanceImpact = analyzeCSSPerformanceImpact;
 
 // Run with default breakpoint (768px)
 (async () => {

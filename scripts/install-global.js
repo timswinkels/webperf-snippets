@@ -25,7 +25,7 @@ function main() {
   console.log('1️⃣  Generating skills...')
   try {
     execSync('node scripts/generate-skills.js', { cwd: ROOT, stdio: 'inherit' })
-  } catch (error) {
+  } catch {
     console.error('❌ Failed to generate skills')
     process.exit(1)
   }

@@ -57,7 +57,7 @@
         (s) => s.href === href
       );
       if (sheet && sheet.cssRules) ruleCount = sheet.cssRules.length;
-    } catch (_) {
+    } catch {
       corsBlocked = true;
     }
 

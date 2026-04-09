@@ -21,8 +21,6 @@
   const domInteractive = nav?.domInteractive || 0;
   const domContentLoaded = nav?.domContentLoadedEventEnd || 0;
   const loadEvent = nav?.loadEventEnd || 0;
-  const fetchStart = nav?.fetchStart || 0;
-
   // 2. Script resource timing (download phase)
   const scriptResources = performance
     .getEntriesByType("resource")

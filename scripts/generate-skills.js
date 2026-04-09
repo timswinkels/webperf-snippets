@@ -218,13 +218,6 @@ function extractThresholds(content) {
   return ''
 }
 
-// Strip internal relative links (e.g. /CoreWebVitals/LCP-Sub-Parts) from markdown link text
-function cleanLinks(text) {
-  return text
-    .replace(/\[([^\]]+)\]\(\/[^)]+\)/g, '$1')  // remove internal links, keep text
-    .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '[$1]($2)')  // keep external links
-}
-
 // Build metadata for a single snippet JS file
 function buildSnippetMeta(category, snippetFile) {
   const basename = path.basename(snippetFile, '.js')

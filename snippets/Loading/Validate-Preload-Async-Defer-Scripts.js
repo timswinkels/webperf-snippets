@@ -95,17 +95,13 @@
 
       // Determine natural priority
       let naturalPriority = "Medium/High";
-      let executionPriority = "Low";
 
       if (isAsync) {
         naturalPriority = "Lowest/Low";
-        executionPriority = "High";
       } else if (isDefer) {
         naturalPriority = "Lowest/Low";
-        executionPriority = "VeryLow";
       } else if (inHead) {
         naturalPriority = "Medium/High";
-        executionPriority = "VeryHigh";
       }
 
       // Check for anti-pattern: preload + async/defer

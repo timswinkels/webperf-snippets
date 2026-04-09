@@ -269,7 +269,7 @@
         console.log("");
         console.log("%c📦 Raw data object:", "font-weight: bold;");
         console.log(data);
-      } catch (e) {
+      } catch {
         console.log("Could not parse JSON content");
       }
     }
