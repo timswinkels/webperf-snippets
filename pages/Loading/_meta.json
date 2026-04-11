@@ -79,5 +79,8 @@
   },
   "Service-Worker-Analysis": {
     "title": "Service Worker Analysis"
+  },
+  "Cache-Strategy-Analysis": {
+    "title": "Cache Strategy Analysis"
   }
 }
