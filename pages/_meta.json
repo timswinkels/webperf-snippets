@@ -16,5 +16,8 @@
   },
   "Media": {
     "title": "Media"
+  },
+  "DevTools-Overrides": {
+    "title": "DevTools Overrides"
   }
 }
