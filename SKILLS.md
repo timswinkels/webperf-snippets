@@ -6,7 +6,7 @@ A collection of [Agent Skills](https://agentskills.io/) for measuring and debugg
 
 ## Why WebPerf Skills?
 
-These skills transform 47 battle-tested JavaScript snippets into agent capabilities for any skills-compatible AI coding assistant:
+These skills transform 48 battle-tested JavaScript snippets into agent capabilities for any skills-compatible AI coding assistant:
 
 - **Browser Console Integration**: Run performance measurements directly in Chrome DevTools
 - **Real-time Analysis**: Measure actual user experience on live pages
@@ -22,7 +22,7 @@ These skills transform 47 battle-tested JavaScript snippets into agent capabilit
 | ------------------------------------------------------- | ---------- | ------------------------------------------------------------ |
 | **[webperf](#webperf)**                                 | Meta-skill | "Audit performance", "check web vitals", "analyze this page" |
 | **[webperf-core-web-vitals](#webperf-core-web-vitals)** | 7          | "Debug LCP", "check CLS", "measure INP"                      |
-| **[webperf-loading](#webperf-loading)**                 | 28         | "Analyze TTFB", "check render-blocking", "audit scripts"     |
+| **[webperf-loading](#webperf-loading)**                 | 29         | "Analyze TTFB", "check render-blocking", "audit scripts"     |
 | **[webperf-interaction](#webperf-interaction)**         | 8          | "Debug jank", "long tasks", "animation frames"               |
 | **[webperf-media](#webperf-media)**                     | 3          | "Audit images", "optimize video", "lazy loading"             |
 | **[webperf-resources](#webperf-resources)**             | 1          | "Check bandwidth", "network quality"                         |
@@ -105,7 +105,7 @@ The main entry point that helps identify the right skill for your performance qu
 **What it does:**
 
 - Routes to the appropriate specialized skill
-- Provides overview of all 47 available snippets
+- Provides overview of all 48 available snippets
 - Suggests which skill to use based on your question
 
 ### webperf-core-web-vitals

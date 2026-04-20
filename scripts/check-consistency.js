@@ -203,7 +203,7 @@ function verifyPublishedCounts(errors) {
       ok:
         skillsDoc.includes(`These skills transform ${total} battle-tested JavaScript snippets`) &&
         skillsDoc.includes(`| **[webperf-loading](#webperf-loading)**                 | ${categoryCounts.Loading}`) &&
-        skillsDoc.includes('Provides overview of all 47 available snippets'),
+        skillsDoc.includes(`Provides overview of all ${total} available snippets`),
     },
     {
       file: 'skills/webperf/SKILL.md',
