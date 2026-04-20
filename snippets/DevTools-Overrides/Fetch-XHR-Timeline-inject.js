@@ -1,4 +1,3 @@
-<script>
 // Fetch & XHR Timeline — Inject via DevTools Overrides
 // https://webperf-snippets.nucliweb.net
 (() => {
@@ -72,4 +71,3 @@
     }).observe({ type: "largest-contentful-paint", buffered: true });
   } catch {}
 })();
-</script>
