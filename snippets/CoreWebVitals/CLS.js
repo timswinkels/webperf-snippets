@@ -1,7 +1,7 @@
 // CLS Quick Check
 // https://webperf-snippets.nucliweb.net
 
-(() => {
+(async () => {
   let cls = 0;
 
   const valueToRating = (score) =>
@@ -63,9 +63,16 @@
     ""
   );
 
-  // Synchronous return for agent (buffered entries)
-  const clsSync = performance.getEntriesByType("layout-shift")
-    .reduce((sum, e) => !e.hadRecentInput ? sum + e.value : sum, 0);
+  // Return for agent — collect via buffered observer (getEntriesByType does not
+  // expose layout-shift entries in Chrome without an active observer).
+  const clsSync = await new Promise((resolve) => {
+    let sum = 0;
+    const obs = new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) if (!e.hadRecentInput) sum += e.value;
+    });
+    obs.observe({ type: "layout-shift", buffered: true });
+    setTimeout(() => { obs.disconnect(); resolve(sum); }, 0);
+  });
   const clsRating = valueToRating(clsSync);
   return {
     script: "CLS",
