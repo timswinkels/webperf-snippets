@@ -1,8 +1,11 @@
 {
-  "name": "webperf-snippets",
+  "name": "webperf-snippets-docs",
   "private": true,
   "version": "1.2.0",
-  "description": "Web Performance Snippets",
+  "description": "Web Performance Snippets — documentation site",
+  "workspaces": [
+    "cli"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
