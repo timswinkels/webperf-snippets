@@ -73,8 +73,10 @@ const browserGlobals = {
   encodeURIComponent: "readonly",
   caches: "readonly",
   CSSRule: "readonly",
+  CSSStyleDeclaration: "readonly",
   NodeFilter: "readonly",
   EventTarget: "readonly",
+  DOMTokenList: "readonly",
 };
 
 export default [

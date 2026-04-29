@@ -1,7 +1,7 @@
 // LCP Sub-Parts Analysis
 // https://webperf-snippets.nucliweb.net
 
-(() => {
+(async () => {
   const formatMs = (ms) => `${Math.round(ms)}ms`;
   const formatPercent = (value, total) => `${Math.round((value / total) * 100)}%`;
 
@@ -204,11 +204,16 @@
   console.log("%c📊 LCP Sub-Parts Analysis Active", "font-weight: bold; font-size: 14px;");
   console.log("   Waiting for LCP...");
 
-  // Synchronous return for agent (buffered entries)
-  const lcpBuffered = performance.getEntriesByType("largest-contentful-paint");
-  const lcpEntry = lcpBuffered.at(-1);
+  // Return for agent — collect via buffered observer (getEntriesByType does not
+  // expose largest-contentful-paint entries in Chrome without an active observer).
+  const lcpEntry = await new Promise((resolve) => {
+    const entries = [];
+    const obs = new PerformanceObserver((list) => entries.push(...list.getEntries()));
+    obs.observe({ type: "largest-contentful-paint", buffered: true });
+    setTimeout(() => { obs.disconnect(); resolve(entries.at(-1) ?? null); }, 0);
+  });
   if (!lcpEntry) {
-    return { script: "LCP-Sub-Parts", status: "error", error: "No LCP entries yet" };
+    return { script: "LCP-Sub-Parts", status: "error", error: "No LCP entries buffered" };
   }
   const navEntrySync = getNavigationEntry();
   if (!navEntrySync) {

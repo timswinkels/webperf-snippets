@@ -1,7 +1,7 @@
 // LCP Quick Check
 // https://webperf-snippets.nucliweb.net
 
-(() => {
+(async () => {
   const valueToRating = (ms) =>
     ms <= 2500 ? "good" : ms <= 4000 ? "needs-improvement" : "poor";
 
@@ -83,11 +83,16 @@
   console.log("%c⏱️ LCP Tracking Active", "font-weight: bold; font-size: 14px;");
   console.log("   LCP may update as larger elements load.");
 
-  // Synchronous return for agent (buffered entries)
-  const lcpEntries = performance.getEntriesByType("largest-contentful-paint");
-  const lastLcpEntry = lcpEntries.at(-1);
+  // Return for agent — collect via buffered observer (getEntriesByType does not
+  // expose largest-contentful-paint entries in Chrome without an active observer).
+  const lastLcpEntry = await new Promise((resolve) => {
+    const entries = [];
+    const obs = new PerformanceObserver((list) => entries.push(...list.getEntries()));
+    obs.observe({ type: "largest-contentful-paint", buffered: true });
+    setTimeout(() => { obs.disconnect(); resolve(entries.at(-1) ?? null); }, 0);
+  });
   if (!lastLcpEntry) {
-    return { script: "LCP", status: "error", error: "No LCP entries yet" };
+    return { script: "LCP", status: "error", error: "No LCP entries buffered" };
   }
   const lcpActivationStart = getActivationStart();
   const lcpValue = Math.round(Math.max(0, lastLcpEntry.startTime - lcpActivationStart));

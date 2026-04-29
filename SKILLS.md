@@ -6,7 +6,7 @@ A collection of [Agent Skills](https://agentskills.io/) for measuring and debugg
 
 ## Why WebPerf Skills?
 
-These skills transform 48 battle-tested JavaScript snippets into agent capabilities for any skills-compatible AI coding assistant:
+These skills transform 49 battle-tested JavaScript snippets into agent capabilities for any skills-compatible AI coding assistant:
 
 - **Browser Console Integration**: Run performance measurements directly in Chrome DevTools
 - **Real-time Analysis**: Measure actual user experience on live pages
@@ -105,7 +105,7 @@ The main entry point that helps identify the right skill for your performance qu
 **What it does:**
 
 - Routes to the appropriate specialized skill
-- Provides overview of all 48 available snippets
+- Provides overview of all 49 available snippets
 - Suggests which skill to use based on your question
 
 ### webperf-core-web-vitals

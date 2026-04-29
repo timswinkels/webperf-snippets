@@ -13,7 +13,7 @@ metadata:
 
 # WebPerf Snippets Toolkit
 
-A collection of 48 JavaScript snippets for measuring and debugging web performance in Chrome DevTools. Each snippet runs in the browser console and outputs structured, color-coded results.
+A collection of 49 JavaScript snippets for measuring and debugging web performance in Chrome DevTools. Each snippet runs in the browser console and outputs structured, color-coded results.
 
 ## Quick Reference
 
