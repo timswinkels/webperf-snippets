@@ -85,6 +85,33 @@ GitHub Actions, fail the PR if LCP exceeds 2.5s:
     npx webperf-snippets https://staging.example.com --budget-lcp 2500 --budget-cls 0.1
 ```
 
+## Publishing
+
+The CLI package is published to npm via a tag-based workflow. Publishing is explicit and intentional — it only happens when a `cli-v*` tag is pushed.
+
+### Release steps
+
+1. Bump the version in `cli/package.json`.
+2. Commit the version change.
+3. Tag and push:
+   ```bash
+   git tag cli-v0.2.0
+   git push origin cli-v0.2.0
+   ```
+4. The `publish-cli` CI job runs, executes the full test suite, and publishes to npm.
+
+### Why tag-based and not path-based
+
+An alternative is to publish automatically on every push to `main` that touches `cli/`, using a version check to skip republishes. Tag-based publishing was chosen instead because it keeps releases deliberate — a passing CI on `main` does not mean the package is ready to ship, and a tag communicates that intent explicitly.
+
+### Access control
+
+Tag protection rules restrict who can push `cli-v*` tags. Configure them under **Settings → Rules → New ruleset** in the repository, targeting the `cli-v*` tag pattern and limiting push access to admins or maintainers. This ensures only authorized collaborators can trigger a publish.
+
+### Required secret
+
+The `NPM_TOKEN` secret must be set in the repository settings with publish access to the `webperf-snippets` npm package.
+
 ## Known limitations (v0.1)
 
 - **No INP**: INP requires real user interactions. v0.2 will support synthetic interaction scripts.
