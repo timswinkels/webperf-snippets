@@ -78,6 +78,10 @@
   const posterUrl = posterAttr ? normalizeUrl(posterAttr) : "";
   const lcpUrl = lcp.url || "";
 
+  // Chrome considers both poster image and first video frame as LCP candidates.
+  // lcpUrl is set when the LCP came from the poster; empty when from the first frame.
+  const lcpSource = lcpUrl ? "poster" : posterAttr ? "unknown" : "first-frame";
+
   const rating = valueToRating(lcpTime);
   const posterFormat = detectFormat(lcpUrl || posterUrl);
   const isModernFormat = ["avif", "webp", "jxl"].includes(posterFormat);
@@ -101,8 +105,11 @@
 
   const issues = [];
 
-  if (!posterAttr) {
-    issues.push({ s: "error", msg: 'No poster attribute — the browser has no image to use as LCP candidate' });
+  if (lcpSource === "first-frame") {
+    issues.push({ s: "info", msg: "LCP is the first video frame — adding a poster gives explicit control over the LCP image" });
+  }
+  if (lcpSource === "first-frame" && (!autoplay || !muted)) {
+    issues.push({ s: "warning", msg: "First-frame LCP requires autoplay + muted for the browser to render it immediately" });
   }
 
   if (posterAttr && !posterPreload) {
@@ -116,7 +123,7 @@
   }
 
   if (isCrossOrigin) {
-    issues.push({ s: "info", msg: "renderTime is 0 — poster is cross-origin and the server does not send Timing-Allow-Origin" });
+    issues.push({ s: "info", msg: "renderTime is 0 — resource is cross-origin and the server does not send Timing-Allow-Origin" });
   }
 
   if (!autoplay && preload === "none") {
@@ -130,6 +137,7 @@
   // LCP metrics
   console.log("%cLCP Metrics", "font-weight: bold;");
   console.log(`   LCP time    : ${lcpTime} ms  ${RATING[rating].icon} ${RATING[rating].label}`);
+  console.log(`   LCP source  : ${lcpSource === "poster" ? "poster image" : lcpSource === "first-frame" ? "first video frame" : "unknown"}`);
   console.log(`   Render time : ${lcp.renderTime > 0 ? Math.round(lcp.renderTime) + " ms" : "0 (cross-origin — add Timing-Allow-Origin)"}`);
   console.log(`   Load time   : ${Math.round(lcp.loadTime)} ms`);
   console.log(`   Size        : ${Math.round(lcp.size)} px²`);
@@ -207,6 +215,7 @@
     thresholds: { good: 2500, needsImprovement: 4000 },
     details: {
       isVideo: true,
+      lcpSource,
       posterUrl: lcpUrl || posterUrl || null,
       posterFormat,
       posterPreloaded: !!posterPreload,
@@ -214,6 +223,6 @@
       isCrossOrigin,
       videoAttributes: { autoplay, muted, playsinline, preload },
     },
-    issues: issues.map((i) => ({ severity: i.s === "error" ? "error" : i.s === "warning" ? "warning" : "info", message: i.msg })),
+    issues: issues.map((i) => ({ severity: i.s === "warning" ? "warning" : "info", message: i.msg })),
   };
 })();
