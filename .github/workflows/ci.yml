@@ -32,9 +32,6 @@ jobs:
       - name: Check consistency
         run: npm run check:consistency
 
-      - name: Install CLI dependencies
-        run: npm ci --prefix cli
-
       - name: Run unit tests
         run: npm run test:unit --prefix cli
 
