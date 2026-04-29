@@ -11,6 +11,15 @@
     "snippets",
     "README.md"
   ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:e2e": "vitest run tests/e2e"
+  },
+  "devDependencies": {
+    "vitest": "^2.0.0"
+  },
   "engines": {
     "node": ">=20.12.0"
   },
