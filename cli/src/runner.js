@@ -1,6 +1,11 @@
 import { chromium } from "playwright";
 
-const DEFAULT_VIEWPORT = { width: 1280, height: 800 };
+export const VIEWPORT_PRESETS = {
+  mobile: { width: 375, height: 812 },
+  tablet: { width: 768, height: 1024 },
+  desktop: { width: 1280, height: 800 },
+};
+
 const DEFAULT_NAV_TIMEOUT = 30000;
 
 // Snippets are IIFEs. Playwright evaluates a string as an expression, so we
@@ -15,7 +20,7 @@ export async function runSnippets({
   items,
   waitMs = 3000,
   headless = true,
-  viewport = DEFAULT_VIEWPORT,
+  viewport = VIEWPORT_PRESETS.mobile,
   navTimeout = DEFAULT_NAV_TIMEOUT,
 }) {
   const browser = await chromium.launch({ headless });

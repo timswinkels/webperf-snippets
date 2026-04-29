@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
 import { loadSnippet } from "./load-snippet.js";
-import { runSnippets } from "./runner.js";
+import { runSnippets, VIEWPORT_PRESETS } from "./runner.js";
 import { cwvWorkflow } from "./workflows/cwv.js";
 import { nextSteps } from "./decision-tree.js";
 import { reportHuman } from "./reporters/human.js";
@@ -25,6 +25,7 @@ Options:
   --workflow <name>     Workflow to run (default: core-web-vitals)
   --snippet <name>      Run a single snippet (e.g. LCP, CLS, or Category/Name)
   --json                Output JSON instead of formatted text
+  --viewport <preset>   Viewport preset: mobile (default), tablet, desktop
   --wait <ms>           Post-load wait before evaluating (default: 3000)
   --budget-lcp <ms>     Exit 1 if LCP exceeds this value
   --budget-cls <score>  Exit 1 if CLS exceeds this value
@@ -90,6 +91,7 @@ async function main() {
         wait: { type: "string" },
         "budget-lcp": { type: "string" },
         "budget-cls": { type: "string" },
+        viewport: { type: "string" },
         headed: { type: "boolean" },
         help: { type: "boolean", short: "h" },
       },
@@ -114,12 +116,18 @@ async function main() {
 
   const items = buildItems(values);
   const waitMs = values.wait ? Number(values.wait) : 3000;
+  const viewportName = values.viewport ?? "mobile";
+  const viewport = VIEWPORT_PRESETS[viewportName];
+  if (!viewport) {
+    fail(`Unknown viewport preset: "${viewportName}". Choose from: ${Object.keys(VIEWPORT_PRESETS).join(", ")}`);
+  }
 
   const initial = await runSnippets({
     url,
     items,
     waitMs,
     headless: !values.headed,
+    viewport,
   });
 
   // Apply decision tree to spawn follow-up steps.
@@ -139,6 +147,7 @@ async function main() {
       items: followItems,
       waitMs,
       headless: !values.headed,
+      viewport,
     });
     // Carry forward the human-readable reason so reporters can show it.
     followUpRun.results = followUpRun.results.map((r) => {
