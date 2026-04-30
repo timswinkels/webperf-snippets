@@ -15,6 +15,9 @@ const SNIPPET_ALIASES = {
   LCP: "CoreWebVitals/LCP",
   CLS: "CoreWebVitals/CLS",
   "LCP-Sub-Parts": "CoreWebVitals/LCP-Sub-Parts",
+  fonts: "Loading/Fonts-Preloaded-Loaded-and-used-above-the-fold",
+  "Fonts-Preloaded-Loaded-and-used-above-the-fold":
+    "Loading/Fonts-Preloaded-Loaded-and-used-above-the-fold",
 };
 
 const USAGE = `webperf-snippets <url> [options]
@@ -36,6 +39,7 @@ Examples:
   npx webperf-snippets https://web.dev
   npx webperf-snippets https://example.com --json
   npx webperf-snippets https://example.com --snippet LCP-Sub-Parts
+  npx webperf-snippets https://example.com --snippet fonts
   npx webperf-snippets https://example.com --budget-lcp 2500
 `;
 

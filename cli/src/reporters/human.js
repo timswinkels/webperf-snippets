@@ -29,9 +29,56 @@ function pad(text, len) {
   return text + " ".repeat(Math.max(0, len - visibleLen));
 }
 
+const DISPLAY_WARN = new Set(["block", "auto", "unknown"]);
+
+function renderFontsResult(r) {
+  const d = r.details ?? {};
+  const lines = [];
+
+  lines.push(styleText("bold", `  Fonts — preloaded: ${d.preloadedCount ?? 0}  loaded: ${d.loadedCount ?? 0}  used above fold: ${d.usedAboveFoldCount ?? 0}`));
+
+  if (r.items?.length) {
+    lines.push("");
+    lines.push(styleText("dim", "  Loaded fonts:"));
+    lines.push(styleText("dim", `    ${"Family".padEnd(20)} ${"Weight".padEnd(8)} ${"Style".padEnd(10)} Display`));
+    for (const f of r.items) {
+      const displayWarning = DISPLAY_WARN.has(f.display) ? styleText("yellow", ` ⚠ ${f.display}`) : styleText("green", ` ${f.display}`);
+      lines.push(`    ${f.family.padEnd(20)} ${f.weight.padEnd(8)} ${f.style.padEnd(10)}${displayWarning}`);
+    }
+  }
+
+  if (r.usedFonts?.length) {
+    lines.push("");
+    lines.push(styleText("dim", "  Used above fold:"));
+    lines.push(styleText("dim", `    ${"Family".padEnd(20)} ${"Weight".padEnd(8)} ${"Style".padEnd(10)} Elements`));
+    const sorted = [...r.usedFonts].sort((a, b) => b.elements - a.elements);
+    for (const f of sorted) {
+      lines.push(`    ${f.family.padEnd(20)} ${f.weight.padEnd(8)} ${f.style.padEnd(10)} ${f.elements}`);
+    }
+  }
+
+  if (r.issues?.length) {
+    lines.push("");
+    lines.push(styleText("dim", "  Issues:"));
+    for (const issue of r.issues) {
+      const color = issue.severity === "error" ? "red" : "yellow";
+      lines.push(`    ${styleText(color, issue.severity === "error" ? "✗" : "⚠")} ${issue.message}`);
+    }
+  } else {
+    lines.push("");
+    lines.push(`    ${styleText("green", "✓")} Font loading looks optimized`);
+  }
+
+  return lines.join("\n");
+}
+
 function renderResult(r) {
   if (r.status === "error") {
     return `  ${styleText("red", "✗")} ${pad(r.id, 16)} ${styleText("dim", r.error)}`;
+  }
+
+  if (Array.isArray(r.issues)) {
+    return renderFontsResult(r);
   }
 
   const icon = RATING_ICON[r.rating] ?? "·";
