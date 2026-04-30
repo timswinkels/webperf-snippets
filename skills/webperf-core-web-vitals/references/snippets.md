@@ -40,11 +40,11 @@ Checks if images qualify as LCP candidates based on their entropy (bits per pixe
 | < 0.05 | 🔴 Low | ❌ No | Solid colors, simple gradients, placeholders |
 | ≥ 0.05 | 🟢 Normal | ✅ Yes | Photos, complex graphics |
 ---
-## LCP Sub-Parts
+## LCP Subparts
 
 Breaks down Largest Contentful Paint into its four phases to identify optimization opportunities. Understanding which phase is slowest helps you focus your optimization efforts where they'll have the most impact. Based on the Web Vitals Chrome Extension.
 
-**Script:** `scripts/LCP-Sub-Parts.js`
+**Script:** `scripts/LCP-Subparts.js`
 ---
 ## LCP Trail
 

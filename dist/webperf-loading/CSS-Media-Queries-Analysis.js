@@ -107,12 +107,12 @@ async function analyzeCSSMediaQueries(minWidth = 768) {
           }
         }
       });
-    } catch (e) {
+    } catch {
       if (sheet.href) try {
         const response = await fetch(sheet.href);
         const cssText = await response.text();
         parseMediaQueriesFromCSS(cssText, sheet.href, false);
-      } catch (fetchError) {
+      } catch {
         corsBlockedCount++;
       }
     }
@@ -226,6 +226,8 @@ async function analyzeCSSPerformanceImpact(minWidth = 768) {
     estimatedConversionLift: (midRangeTotalBlocking * 0.6 / 100).toFixed(2) + "%"
   };
 }
+
+window.analyzeCSSPerformanceImpact = analyzeCSSPerformanceImpact;
 
 (async () => {
   const result = await analyzeCSSMediaQueries();

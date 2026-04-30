@@ -1,4 +1,4 @@
-// LCP Sub-Parts Analysis
+// LCP Subparts Analysis
 // https://webperf-snippets.nucliweb.net
 
 (async () => {
@@ -201,7 +201,7 @@
 
   observer.observe({ type: "largest-contentful-paint", buffered: true });
 
-  console.log("%c📊 LCP Sub-Parts Analysis Active", "font-weight: bold; font-size: 14px;");
+  console.log("%c📊 LCP Subparts Analysis Active", "font-weight: bold; font-size: 14px;");
   console.log("   Waiting for LCP...");
 
   // Return for agent — collect via buffered observer (getEntriesByType does not
@@ -210,14 +210,14 @@
     const entries = [];
     const obs = new PerformanceObserver((list) => entries.push(...list.getEntries()));
     obs.observe({ type: "largest-contentful-paint", buffered: true });
-    setTimeout(() => { obs.disconnect(); resolve(entries.at(-1) ?? null); }, 0);
+    setTimeout(() => { obs.disconnect(); resolve(entries.at(-1) ?? null); }, 100);
   });
   if (!lcpEntry) {
-    return { script: "LCP-Sub-Parts", status: "error", error: "No LCP entries buffered" };
+    return { script: "LCP-Subparts", status: "error", error: "No LCP entries buffered" };
   }
   const navEntrySync = getNavigationEntry();
   if (!navEntrySync) {
-    return { script: "LCP-Sub-Parts", status: "error", error: "No navigation entry" };
+    return { script: "LCP-Subparts", status: "error", error: "No navigation entry" };
   }
   const lcpResEntrySync = performance.getEntriesByType("resource")
     .find((e) => e.name === lcpEntry.url);
@@ -264,7 +264,7 @@
       })()
     : null;
   return {
-    script: "LCP-Sub-Parts",
+    script: "LCP-Subparts",
     status: "ok",
     metric: "LCP",
     value: totalSync,

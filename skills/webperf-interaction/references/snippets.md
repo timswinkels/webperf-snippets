@@ -1,4 +1,10 @@
 ---
+## Forced Synchronous Layout Detector
+
+Detects the Forced Synchronous Layout (FSL) pattern at runtime — when JavaScript reads geometric properties from the DOM immediately after mutating styles, forcing the browser to perform layout synchronously on the main thread.
+
+**Script:** `scripts/Forced-Synchronous-Layout.js`
+---
 ## Input Latency Breakdown
 
 Aggregates interaction latency by event type to reveal which phase causes slowness across all interactions with the page. While Interactions shows a per-interaction breakdown in real time, this snippet collects data over time and answers a different question: is click systematically slower than keypress? Is the bottleneck always input delay, or does it vary by event?

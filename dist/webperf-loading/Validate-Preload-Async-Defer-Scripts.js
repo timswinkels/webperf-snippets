@@ -60,17 +60,7 @@
       const scriptLocation = inHead ? "head" : "body";
       const fetchPriority = matchingScript.getAttribute("fetchpriority");
       let naturalPriority = "Medium/High";
-      let executionPriority = "Low";
-      if (isAsync) {
-        naturalPriority = "Lowest/Low";
-        executionPriority = "High";
-      } else if (isDefer) {
-        naturalPriority = "Lowest/Low";
-        executionPriority = "VeryLow";
-      } else if (inHead) {
-        naturalPriority = "Medium/High";
-        executionPriority = "VeryHigh";
-      }
+      if (isAsync) naturalPriority = "Lowest/Low"; else if (isDefer) naturalPriority = "Lowest/Low"; else if (inHead) naturalPriority = "Medium/High";
       if (isAsync || isDefer) {
         const attributes = [];
         if (isAsync) attributes.push("async");

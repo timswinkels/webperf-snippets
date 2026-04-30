@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   let cls = 0;
   const valueToRating = score => score <= 0.1 ? "good" : score <= 0.25 ? "needs-improvement" : "poor";
   const RATING = {
@@ -49,7 +49,20 @@
       }
     };
   };
-  const clsSync = performance.getEntriesByType("layout-shift").reduce((sum, e) => !e.hadRecentInput ? sum + e.value : sum, 0);
+  const clsSync = await new Promise(resolve => {
+    let sum = 0;
+    const obs = new PerformanceObserver(list => {
+      for (const e of list.getEntries()) if (!e.hadRecentInput) sum += e.value;
+    });
+    obs.observe({
+      type: "layout-shift",
+      buffered: true
+    });
+    setTimeout(() => {
+      obs.disconnect();
+      resolve(sum);
+    }, 100);
+  });
   const clsRating = valueToRating(clsSync);
   return {
     script: "CLS",

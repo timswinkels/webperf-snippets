@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   const valueToRating = ms => ms <= 2500 ? "good" : ms <= 4000 ? "needs-improvement" : "poor";
   const RATING = {
     good: {
@@ -18,15 +18,15 @@
     const navEntry = performance.getEntriesByType("navigation")[0];
     return navEntry?.activationStart || 0;
   };
-  const observer = new PerformanceObserver(list => {
-    const entries = list.getEntries();
-    const lastEntry = entries[entries.length - 1];
-    if (!lastEntry) return;
+  let lastPrintedTime = -1;
+  const printLCP = entry => {
     const activationStart = getActivationStart();
-    const lcpTime = Math.max(0, lastEntry.startTime - activationStart);
+    const lcpTime = Math.max(0, entry.startTime - activationStart);
+    if (lcpTime === lastPrintedTime) return;
+    lastPrintedTime = lcpTime;
     const rating = valueToRating(lcpTime);
     const {icon: icon, color: color} = RATING[rating];
-    const element = lastEntry.element;
+    const element = entry.element;
     if (element) {
       let selector = element.tagName.toLowerCase();
       if (element.id) selector = `#${element.id}`; else if (element.className && typeof element.className === "string") {
@@ -39,22 +39,38 @@
       } else if (tagName === "video") {
       } else if (window.getComputedStyle(element).backgroundImage !== "none") {
       } else void 0;
-      if (lastEntry.size) void 0;
+      if (entry.size) void 0;
       element.style.outline = "3px dashed lime";
       element.style.outlineOffset = "2px";
     }
+  };
+  const observer = new PerformanceObserver(list => {
+    const entries = list.getEntries();
+    const lastEntry = entries[entries.length - 1];
+    if (lastEntry) printLCP(lastEntry);
   });
   observer.observe({
     type: "largest-contentful-paint",
     buffered: true
   });
-  const lcpEntries = performance.getEntriesByType("largest-contentful-paint");
-  const lastLcpEntry = lcpEntries.at(-1);
+  const lastLcpEntry = await new Promise(resolve => {
+    const entries = [];
+    const obs = new PerformanceObserver(list => entries.push(...list.getEntries()));
+    obs.observe({
+      type: "largest-contentful-paint",
+      buffered: true
+    });
+    setTimeout(() => {
+      obs.disconnect();
+      resolve(entries.at(-1) ?? null);
+    }, 100);
+  });
   if (!lastLcpEntry) return {
     script: "LCP",
     status: "error",
-    error: "No LCP entries yet"
+    error: "No LCP entries buffered"
   };
+  printLCP(lastLcpEntry);
   const lcpActivationStart = getActivationStart();
   const lcpValue = Math.round(Math.max(0, lastLcpEntry.startTime - lcpActivationStart));
   const lcpRating = valueToRating(lcpValue);

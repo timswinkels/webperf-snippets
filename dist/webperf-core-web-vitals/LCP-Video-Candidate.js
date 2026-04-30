@@ -56,6 +56,7 @@
   const posterAttr = element.getAttribute("poster") || "";
   const posterUrl = posterAttr ? normalizeUrl(posterAttr) : "";
   const lcpUrl = lcp.url || "";
+  const lcpSource = lcpUrl ? "poster" : posterAttr ? "unknown" : "first-frame";
   const rating = valueToRating(lcpTime);
   const posterFormat = detectFormat(lcpUrl || posterUrl);
   const isModernFormat = [ "avif", "webp", "jxl" ].includes(posterFormat);
@@ -75,9 +76,13 @@
   const muted = element.hasAttribute("muted") || element.muted;
   const playsinline = element.hasAttribute("playsinline");
   const issues = [];
-  if (!posterAttr) issues.push({
-    s: "error",
-    msg: "No poster attribute — the browser has no image to use as LCP candidate"
+  if (lcpSource === "first-frame") issues.push({
+    s: "info",
+    msg: "LCP is the first video frame — adding a poster gives explicit control over the LCP image"
+  });
+  if (lcpSource === "first-frame" && (!autoplay || !muted)) issues.push({
+    s: "warning",
+    msg: "First-frame LCP requires autoplay + muted for the browser to render it immediately"
   });
   if (posterAttr && !posterPreload) issues.push({
     s: "warning",
@@ -92,7 +97,7 @@
   });
   if (isCrossOrigin) issues.push({
     s: "info",
-    msg: "renderTime is 0 — poster is cross-origin and the server does not send Timing-Allow-Origin"
+    msg: "renderTime is 0 — resource is cross-origin and the server does not send Timing-Allow-Origin"
   });
   if (!autoplay && preload === "none") issues.push({
     s: "warning",
@@ -125,6 +130,7 @@
     },
     details: {
       isVideo: true,
+      lcpSource: lcpSource,
       posterUrl: lcpUrl || posterUrl || null,
       posterFormat: posterFormat,
       posterPreloaded: !!posterPreload,
@@ -138,7 +144,7 @@
       }
     },
     issues: issues.map(i => ({
-      severity: i.s === "error" ? "error" : i.s === "warning" ? "warning" : "info",
+      severity: i.s === "warning" ? "warning" : "info",
       message: i.msg
     }))
   };

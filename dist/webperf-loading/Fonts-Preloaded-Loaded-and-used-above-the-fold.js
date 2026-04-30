@@ -55,7 +55,6 @@
   });
   const usedFonts = Array.from(usedFontsMap.values());
   const preloadedNames = preloadedFonts.map(f => normalizeFontFamily(f.name.replace(/\.(woff2?|ttf|otf|eot)$/i, "")));
-  uniqueLoadedFonts.map(f => normalizeFontFamily(f.family));
   const usedFamilies = usedFonts.map(f => normalizeFontFamily(f.family));
   const preloadedNotUsed = preloadedFonts.filter(f => {
     const name = normalizeFontFamily(f.name.replace(/\.(woff2?|ttf|otf|eot)$/i, ""));

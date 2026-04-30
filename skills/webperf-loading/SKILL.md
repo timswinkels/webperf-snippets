@@ -5,7 +5,7 @@ context: fork
 license: MIT
 metadata:
   author: Joan Leon | @nucliweb
-  version: 1.1.0
+  version: 1.2.0
   mcp-server: chrome-devtools
   category: web-performance
   repository: https://github.com/nucliweb/webperf-snippets
@@ -19,6 +19,7 @@ JavaScript snippets for measuring web performance in Chrome DevTools. Execute wi
 
 - `scripts/Back-Forward-Cache.js` — Back/Forward Cache (bfcache)
 - `scripts/CSS-Media-Queries-Analysis.js` — CSS Media Queries Analysis
+- `scripts/Cache-Strategy-Analysis.js` — Cache Strategy Analysis
 - `scripts/Client-Side-Redirect-Detection.js` — Client-Side Redirect Detection
 - `scripts/Content-Visibility.js` — Content Visibility
 - `scripts/Critical-CSS-Detection.js` — Critical CSS Detection

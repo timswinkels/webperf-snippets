@@ -5,7 +5,7 @@ context: fork
 license: MIT
 metadata:
   author: Joan Leon | @nucliweb
-  version: 1.1.0
+  version: 1.2.0
   mcp-server: chrome-devtools
   category: web-performance
   repository: https://github.com/nucliweb/webperf-snippets
@@ -17,6 +17,7 @@ JavaScript snippets for measuring web performance in Chrome DevTools. Execute wi
 
 ## Scripts
 
+- `scripts/Forced-Synchronous-Layout.js` — Forced Synchronous Layout Detector
 - `scripts/Input-Latency-Breakdown.js` — Input Latency Breakdown
 - `scripts/Interactions.js` — Interactions
 - `scripts/Layout-Shift-Loading-and-Interaction.js` — Layout Shift Tracking

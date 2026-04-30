@@ -11,7 +11,7 @@
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
   function isInViewport(element) {
@@ -29,7 +29,7 @@
       const entries = performance.getEntriesByType("resource");
       const entry = entries.find(e => e.name === src || e.name.includes(src.split("/").pop()));
       if (entry && entry.transferSize) return (entry.transferSize / 1024).toFixed(1) + " KB";
-    } catch (err) {}
+    } catch {}
     return null;
   }
   function getLazyType(element) {
@@ -104,10 +104,19 @@
   if (results.lazyImages.length === 0) void 0; else {
     if (results.summary.lcpAffected) {
     }
-    results.lazyImages.map(({element: element, area: area, position: position, ...rest}) => ({
-      ...rest,
-      top: position.top + "px",
-      isLcpCandidate: rest.isLcpCandidate ? "⚠️ YES" : "no"
+    results.lazyImages.map(image => ({
+      selector: image.selector,
+      lazyType: image.lazyType,
+      dimensions: image.dimensions,
+      top: image.position.top + "px",
+      distanceFromEdge: image.distanceFromEdge,
+      src: image.src,
+      srcset: image.srcset,
+      sizes: image.sizes,
+      alt: image.alt,
+      fetchPriority: image.fetchPriority,
+      fileSize: image.fileSize,
+      isLcpCandidate: image.isLcpCandidate ? "⚠️ YES" : "no"
     }));
     results.nodeArray.forEach((node, i) => {
     });
@@ -122,7 +131,20 @@
       withDataSrc: results.summary.withDataSrc,
       lcpAffected: results.summary.lcpAffected
     },
-    items: results.lazyImages.map(({element: element, area: area, ...rest}) => rest),
+    items: results.lazyImages.map(image => ({
+      selector: image.selector,
+      lazyType: image.lazyType,
+      dimensions: image.dimensions,
+      position: image.position,
+      distanceFromEdge: image.distanceFromEdge,
+      src: image.src,
+      srcset: image.srcset,
+      sizes: image.sizes,
+      alt: image.alt,
+      fetchPriority: image.fetchPriority,
+      fileSize: image.fileSize,
+      isLcpCandidate: image.isLcpCandidate
+    })),
     issues: [ ...results.summary.lcpAffected ? [ {
       severity: "error",
       message: 'LCP candidate image has lazy loading — remove loading="lazy" and add fetchpriority="high"'

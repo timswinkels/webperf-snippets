@@ -11,7 +11,7 @@
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
   function isInViewport(element) {
@@ -34,7 +34,7 @@
           reason: selector,
           container: getSelector(parent)
         };
-      } catch (e) {}
+      } catch {}
       parent = parent.parentElement;
     }
     return {
@@ -116,11 +116,26 @@
   if (totalImages === 0) void 0; else {
     if (totalSize > 0) void 0;
     if (results.belowFold.length > 0) {
-      results.belowFold.slice(0, 20).map(({element: element, fullSrc: fullSrc, ...rest}) => rest);
+      results.belowFold.slice(0, 20).map(img => ({
+        selector: img.selector,
+        src: img.src,
+        dimensions: img.dimensions,
+        size: img.size,
+        sizeFormatted: img.sizeFormatted,
+        distanceFromViewport: img.distanceFromViewport
+      }));
       if (results.belowFold.length > 20) void 0;
     }
     if (results.hiddenContainers.length > 0) {
-      results.hiddenContainers.slice(0, 15).map(({element: element, fullSrc: fullSrc, distanceFromViewport: distanceFromViewport, ...rest}) => rest);
+      results.hiddenContainers.slice(0, 15).map(img => ({
+        selector: img.selector,
+        src: img.src,
+        dimensions: img.dimensions,
+        size: img.size,
+        sizeFormatted: img.sizeFormatted,
+        hiddenReason: img.hiddenReason,
+        container: img.container
+      }));
       if (results.hiddenContainers.length > 15) void 0;
     }
     results.elements.slice(0, 15).forEach((img, i) => {});

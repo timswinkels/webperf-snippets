@@ -16,26 +16,24 @@
     return navEntry?.activationStart || 0;
   };
 
-  const observer = new PerformanceObserver((list) => {
-    const entries = list.getEntries();
-    const lastEntry = entries[entries.length - 1];
+  let lastPrintedTime = -1;
 
-    if (!lastEntry) return;
-
+  const printLCP = (entry) => {
     const activationStart = getActivationStart();
-    const lcpTime = Math.max(0, lastEntry.startTime - activationStart);
+    const lcpTime = Math.max(0, entry.startTime - activationStart);
+    if (lcpTime === lastPrintedTime) return;
+    lastPrintedTime = lcpTime;
+
     const rating = valueToRating(lcpTime);
     const { icon, color } = RATING[rating];
 
     console.group(`%cLCP: ${icon} ${(lcpTime / 1000).toFixed(2)}s (${rating})`, `color: ${color}; font-weight: bold; font-size: 14px;`);
 
-    // Element info
-    const element = lastEntry.element;
+    const element = entry.element;
     if (element) {
       console.log("");
       console.log("%cLCP Element:", "font-weight: bold;");
 
-      // Get element identifier
       let selector = element.tagName.toLowerCase();
       if (element.id) selector = `#${element.id}`;
       else if (element.className && typeof element.className === "string") {
@@ -45,30 +43,27 @@
 
       console.log(`   Element: ${selector}`, element);
 
-      // Element type and details
       const tagName = element.tagName.toLowerCase();
       if (tagName === "img") {
         console.log(`   Type: Image`);
-        console.log(`   URL: ${lastEntry.url || element.src}`);
+        console.log(`   URL: ${entry.url || element.src}`);
         if (element.naturalWidth) {
           console.log(`   Dimensions: ${element.naturalWidth}×${element.naturalHeight}`);
         }
       } else if (tagName === "video") {
         console.log(`   Type: Video poster`);
-        console.log(`   URL: ${lastEntry.url || element.poster}`);
+        console.log(`   URL: ${entry.url || element.poster}`);
       } else if (window.getComputedStyle(element).backgroundImage !== "none") {
         console.log(`   Type: Background image`);
-        console.log(`   URL: ${lastEntry.url}`);
+        console.log(`   URL: ${entry.url}`);
       } else {
         console.log(`   Type: ${tagName === "h1" || tagName === "p" ? "Text block" : tagName}`);
       }
 
-      // Size
-      if (lastEntry.size) {
-        console.log(`   Size: ${lastEntry.size.toLocaleString()} px²`);
+      if (entry.size) {
+        console.log(`   Size: ${entry.size.toLocaleString()} px²`);
       }
 
-      // Highlight element
       element.style.outline = "3px dashed lime";
       element.style.outlineOffset = "2px";
       console.log("");
@@ -76,6 +71,12 @@
     }
 
     console.groupEnd();
+  };
+
+  const observer = new PerformanceObserver((list) => {
+    const entries = list.getEntries();
+    const lastEntry = entries[entries.length - 1];
+    if (lastEntry) printLCP(lastEntry);
   });
 
   observer.observe({ type: "largest-contentful-paint", buffered: true });
@@ -85,15 +86,19 @@
 
   // Return for agent — collect via buffered observer (getEntriesByType does not
   // expose largest-contentful-paint entries in Chrome without an active observer).
+  // 100ms gives the observer time to process buffered entries on busy pages.
   const lastLcpEntry = await new Promise((resolve) => {
     const entries = [];
     const obs = new PerformanceObserver((list) => entries.push(...list.getEntries()));
     obs.observe({ type: "largest-contentful-paint", buffered: true });
-    setTimeout(() => { obs.disconnect(); resolve(entries.at(-1) ?? null); }, 0);
+    setTimeout(() => { obs.disconnect(); resolve(entries.at(-1) ?? null); }, 100);
   });
   if (!lastLcpEntry) {
     return { script: "LCP", status: "error", error: "No LCP entries buffered" };
   }
+
+  printLCP(lastLcpEntry);
+
   const lcpActivationStart = getActivationStart();
   const lcpValue = Math.round(Math.max(0, lastLcpEntry.startTime - lcpActivationStart));
   const lcpRating = valueToRating(lcpValue);

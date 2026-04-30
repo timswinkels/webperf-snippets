@@ -59,7 +59,7 @@
       contentMap.get(normalized).push(s.index);
     }
   });
-  const duplicates = Array.from(contentMap.entries()).filter(([_, indices]) => indices.length > 1).map(([_, indices]) => indices);
+  const duplicates = Array.from(contentMap.entries()).filter(([, indices]) => indices.length > 1).map(([, indices]) => indices);
   let rating, ratingColor;
   const inlineThreshold = 3 * 1024;
   if (totalSize <= inlineThreshold && parserBlockingInHead.length === 0) {

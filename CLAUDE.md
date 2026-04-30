@@ -97,7 +97,7 @@ To add a new snippet or category:
 
 1. Create the `.mdx` file in the appropriate category directory
 2. Add an entry to the corresponding `_meta.json` file with title and ordering
-3. Use kebab-case for file names (e.g., `LCP-Sub-Parts.mdx`)
+3. Use kebab-case for file names (e.g., `LCP-Subparts.mdx`)
 4. If creating a redirect for a renamed page, update `next.config.js`
 
 Example `_meta.json` entry:

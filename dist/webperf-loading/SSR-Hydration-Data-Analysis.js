@@ -148,7 +148,7 @@
         if (sensitivePatterns.test(propsString)) void 0;
         if (largeArrays.length === 0 && !checkDepth(pageProps) && !sensitivePatterns.test(propsString)) void 0;
       }
-    } catch (e) {
+    } catch {
     }
     if (fw.name === "Astro") {
       fw.elements.map((island, i) => {

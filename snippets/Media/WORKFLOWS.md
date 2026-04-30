@@ -111,7 +111,7 @@ Use this decision tree to automatically run follow-up snippets based on results:
 - **If video is LCP candidate** → Run:
   1. **webperf-core-web-vitals:LCP-Video-Candidate.js** (confirm)
   2. **webperf-core-web-vitals:LCP.js** (measure LCP)
-  3. **webperf-core-web-vitals:LCP-Sub-Parts.js** (break down timing)
+  3. **webperf-core-web-vitals:LCP-Subparts.js** (break down timing)
   4. Optimize video poster image or consider image alternative
 
 - **If video missing poster** → Recommend:

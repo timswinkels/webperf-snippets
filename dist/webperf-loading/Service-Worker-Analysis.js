@@ -24,7 +24,7 @@
       if (preload.enabled) {
       } else {
       }
-    } catch (_) {}
+    } catch {}
   }
   if (controller) {
   } else {
@@ -51,5 +51,5 @@
         totalEntries += keys.length;
       }
     }
-  } catch (_) {}
+  } catch {}
 })();

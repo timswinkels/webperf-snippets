@@ -71,7 +71,7 @@
       for (const e of list.getEntries()) if (!e.hadRecentInput) sum += e.value;
     });
     obs.observe({ type: "layout-shift", buffered: true });
-    setTimeout(() => { obs.disconnect(); resolve(sum); }, 0);
+    setTimeout(() => { obs.disconnect(); resolve(sum); }, 100);
   });
   const clsRating = valueToRating(clsSync);
   return {

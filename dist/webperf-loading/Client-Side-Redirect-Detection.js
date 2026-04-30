@@ -91,7 +91,6 @@
   }
   const hasDocumentNavigation = documentNavigations.length > 0;
   const hasSameOriginRedirect = sameOrigin && referrerPath !== currentPath && referrerPath !== "";
-  hasDocumentNavigation && documentNavigations.reduce((sum, nav) => sum + nav.duration, 0);
   if (hasDocumentNavigation || serverRedirects > 0) {
     if (serverRedirects > 0) {
     }

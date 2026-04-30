@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   const formatMs = ms => `${Math.round(ms)}ms`;
   const formatPercent = (value, total) => `${Math.round(value / total * 100)}%`;
   const valueToRating = ms => ms <= 2500 ? "good" : ms <= 4000 ? "needs-improvement" : "poor";
@@ -128,16 +128,26 @@
     type: "largest-contentful-paint",
     buffered: true
   });
-  const lcpBuffered = performance.getEntriesByType("largest-contentful-paint");
-  const lcpEntry = lcpBuffered.at(-1);
+  const lcpEntry = await new Promise(resolve => {
+    const entries = [];
+    const obs = new PerformanceObserver(list => entries.push(...list.getEntries()));
+    obs.observe({
+      type: "largest-contentful-paint",
+      buffered: true
+    });
+    setTimeout(() => {
+      obs.disconnect();
+      resolve(entries.at(-1) ?? null);
+    }, 100);
+  });
   if (!lcpEntry) return {
-    script: "LCP-Sub-Parts",
+    script: "LCP-Subparts",
     status: "error",
-    error: "No LCP entries yet"
+    error: "No LCP entries buffered"
   };
   const navEntrySync = getNavigationEntry();
   if (!navEntrySync) return {
-    script: "LCP-Sub-Parts",
+    script: "LCP-Subparts",
     status: "error",
     error: "No navigation entry"
   };
@@ -185,7 +195,7 @@
     }
   })() : null;
   return {
-    script: "LCP-Sub-Parts",
+    script: "LCP-Subparts",
     status: "ok",
     metric: "LCP",
     value: totalSync,

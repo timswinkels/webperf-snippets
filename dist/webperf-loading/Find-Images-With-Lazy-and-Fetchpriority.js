@@ -11,7 +11,7 @@
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
   function isInViewport(element) {
@@ -44,7 +44,7 @@
         element: el
       };
     });
-    tableData.forEach(({element: element, selector: selector, isLcpCandidate: isLcpCandidate}, i) => {
+    tableData.forEach(({element: element, isLcpCandidate: isLcpCandidate}, i) => {
     });
     tableData.forEach(({selector: selector, inViewport: inViewport, isLcpCandidate: isLcpCandidate}) => {
       if (inViewport === "Yes" || isLcpCandidate === "⚠️ Yes") {

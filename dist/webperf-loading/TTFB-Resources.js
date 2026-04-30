@@ -23,12 +23,12 @@
     resourcesData.filter(r => r.thirdParty).length;
     const slowResources = resourcesData.filter(r => r.ttfb > 500).length;
     if (slowResources > 0) void 0;
-    resourcesData.slice(0, 25).map(({fullUrl: fullUrl, ...rest}) => ({
-      "TTFB (ms)": rest.ttfb.toFixed(0),
-      "Duration (ms)": rest.duration.toFixed(0),
-      Type: rest.type,
-      "3rd Party": rest.thirdParty ? "Yes" : "",
-      Resource: rest.resource
+    resourcesData.slice(0, 25).map(resource => ({
+      "TTFB (ms)": resource.ttfb.toFixed(0),
+      "Duration (ms)": resource.duration.toFixed(0),
+      Type: resource.type,
+      "3rd Party": resource.thirdParty ? "Yes" : "",
+      Resource: resource.resource
     }));
     if (resourcesData.length > 25) void 0;
     const slowest = resourcesData.slice(0, 5);

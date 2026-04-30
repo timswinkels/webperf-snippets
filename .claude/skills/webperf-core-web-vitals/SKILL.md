@@ -5,7 +5,7 @@ context: fork
 license: MIT
 metadata:
   author: Joan Leon | @nucliweb
-  version: 1.1.0
+  version: 1.2.0
   mcp-server: chrome-devtools
   category: web-performance
   repository: https://github.com/nucliweb/webperf-snippets
@@ -20,7 +20,7 @@ JavaScript snippets for measuring web performance in Chrome DevTools. Execute wi
 - `scripts/CLS.js` — Cumulative Layout Shift (CLS)
 - `scripts/INP.js` — Interaction to Next Paint (INP)
 - `scripts/LCP-Image-Entropy.js` — LCP Image Entropy
-- `scripts/LCP-Sub-Parts.js` — LCP Sub-Parts
+- `scripts/LCP-Subparts.js` — LCP Subparts
 - `scripts/LCP-Trail.js` — LCP Trail
 - `scripts/LCP-Video-Candidate.js` — LCP Video Candidate
 - `scripts/LCP.js` — Largest Contentful Paint (LCP)
@@ -35,7 +35,7 @@ When the user asks for a comprehensive Core Web Vitals analysis or "audit CWV":
 1. **LCP.js** - Measure Largest Contentful Paint
 2. **CLS.js** - Measure Cumulative Layout Shift
 3. **INP.js** - Measure Interaction to Next Paint
-4. **LCP-Sub-Parts.js** - Break down LCP timing phases
+4. **LCP-Subparts.js** - Break down LCP timing phases
 5. **LCP-Trail.js** - Track LCP candidate evolution
 
 ### LCP Deep Dive
@@ -43,7 +43,7 @@ When the user asks for a comprehensive Core Web Vitals analysis or "audit CWV":
 When LCP is slow or the user asks "debug LCP" or "why is LCP slow":
 
 1. **LCP.js** - Establish baseline LCP value
-2. **LCP-Sub-Parts.js** - Break down into TTFB, resource load, render delay
+2. **LCP-Subparts.js** - Break down into TTFB, resource load, render delay
 3. **LCP-Trail.js** - Identify all LCP candidates and changes
 4. **LCP-Image-Entropy.js** - Check if LCP image has visual complexity issues
 5. **LCP-Video-Candidate.js** - Detect if LCP is a video (poster or video element)
@@ -74,7 +74,7 @@ When LCP is a video element (detected by LCP-Video-Candidate.js):
 
 1. **LCP-Video-Candidate.js** - Identify video as LCP candidate
 2. **Video-Element-Audit.js** (from Media skill) - Audit video loading strategy
-3. **LCP-Sub-Parts.js** - Analyze video loading phases
+3. **LCP-Subparts.js** - Analyze video loading phases
 4. Cross-reference with **webperf-loading** skill:
    - Resource-Hints-Validation.js (check for video preload)
    - Priority-Hints-Audit.js (check for fetchpriority on video)
@@ -84,7 +84,7 @@ When LCP is a video element (detected by LCP-Video-Candidate.js):
 When LCP is an image (most common case):
 
 1. **LCP.js** - Measure LCP timing
-2. **LCP-Sub-Parts.js** - Break down timing phases
+2. **LCP-Subparts.js** - Break down timing phases
 3. **LCP-Image-Entropy.js** - Analyze image complexity
 4. Cross-reference with **webperf-media** skill:
    - Image-Element-Audit.js (check format, dimensions, lazy loading)
@@ -99,13 +99,13 @@ Use this decision tree to automatically run follow-up snippets based on results:
 
 ### After LCP.js
 
-- **If LCP > 2.5s** → Run **LCP-Sub-Parts.js** to diagnose which phase is slow
+- **If LCP > 2.5s** → Run **LCP-Subparts.js** to diagnose which phase is slow
 - **If LCP > 4.0s (poor)** → Run full LCP deep dive workflow (5 snippets)
 - **If LCP candidate is an image** → Run **LCP-Image-Entropy.js** and **webperf-media:Image-Element-Audit.js**
 - **If LCP candidate is a video** → Run **LCP-Video-Candidate.js** and **webperf-media:Video-Element-Audit.js**
 - **Always run** → **LCP-Trail.js** to understand candidate evolution
 
-### After LCP-Sub-Parts.js
+### After LCP-Subparts.js
 
 - **If TTFB phase > 600ms** → Switch to **webperf-loading** skill and run TTFB-Sub-Parts.js
 - **If Resource Load Time > 1500ms** → Run:
@@ -140,7 +140,7 @@ Use this decision tree to automatically run follow-up snippets based on results:
 - **If video is LCP** → Run:
   1. **webperf-media:Video-Element-Audit.js** (check poster, preload, formats)
   2. **webperf-loading:Priority-Hints-Audit.js** (check fetchpriority on poster)
-  3. **LCP-Sub-Parts.js** (analyze video loading phases)
+  3. **LCP-Subparts.js** (analyze video loading phases)
 - **If poster image is LCP** → Treat as image LCP (run image workflows)
 
 ### After CLS.js
@@ -169,7 +169,7 @@ Use this decision tree to automatically run follow-up snippets based on results:
 - **If any script returns `status: "error"`** → Check if the page has finished loading:
   - If early in load: wait and re-run the script
   - If page is an SPA: user may need to navigate to the target route first
-- **If LCP.js / LCP-Sub-Parts.js returns `status: "error"`** → Tell the user: "LCP data is not available yet. Please ensure the page has fully loaded, then run the analysis again."
+- **If LCP.js / LCP-Subparts.js returns `status: "error"`** → Tell the user: "LCP data is not available yet. Please ensure the page has fully loaded, then run the analysis again."
 - **If INP.js `getINP()` returns `status: "error"`** → The `getDataFn: "getINP"` field signals the agent can retry after user interaction. Prompt the user to click, type, or scroll, then call `getINP()` again.
 
 ### Cross-Skill Triggers

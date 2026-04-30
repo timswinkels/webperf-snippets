@@ -5,7 +5,7 @@ context: fork
 license: MIT
 metadata:
   author: Joan Leon | @nucliweb
-  version: 1.1.0
+  version: 1.2.0
   mcp-server: chrome-devtools
   category: web-performance
   repository: https://github.com/nucliweb/webperf-snippets
@@ -21,7 +21,7 @@ A collection of 49 JavaScript snippets for measuring and debugging web performan
 |-------|----------|-----------------|
 | webperf-core-web-vitals | 7 | "debug LCP", "slow LCP", "CLS", "layout shifts", "INP", "interaction latency", "responsiveness" |
 | webperf-loading | 29 | "TTFB", "slow server", "FCP", "render blocking", "font loading", "script loading", "resource hints", "service worker" |
-| webperf-interaction | 8 | "jank", "scroll performance", "long tasks", "animation frames", "INP debug" |
+| webperf-interaction | 9 | "jank", "scroll performance", "long tasks", "animation frames", "INP debug" |
 | webperf-media | 3 | "image audit", "lazy loading", "image optimization", "video audit" |
 | webperf-resources | 1 | "network quality", "bandwidth", "connection type", "save-data" |
 

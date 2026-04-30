@@ -55,6 +55,11 @@ module.exports = withNextra({
         destination: "/Loading/SSR-Hydration-Data-Analysis",
         permanent: true,
       },
+      {
+        source: "/CoreWebVitals/LCP-Sub-Parts",
+        destination: "/CoreWebVitals/LCP-Subparts",
+        permanent: true,
+      },
     ];
   },
 });

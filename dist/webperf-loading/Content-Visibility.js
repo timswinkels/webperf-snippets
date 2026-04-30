@@ -20,7 +20,7 @@ function detectContentVisibility() {
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
   function isInViewport(element) {
@@ -85,7 +85,7 @@ function analyzeContentVisibilityOpportunities(options = {}) {
         if (el.id) break;
         node = el.parentNode;
       }
-    } catch (err) {}
+    } catch {}
     return sel;
   }
   function estimateRenderSavings(childCount) {
@@ -127,18 +127,32 @@ function analyzeContentVisibilityOpportunities(options = {}) {
   opportunities.sort((a, b) => b.childElements - a.childElements);
   if (opportunities.length === 0) {
   } else {
-    opportunities.slice(0, 20).map(({element: element, ...rest}) => rest);
+    opportunities.slice(0, 20).map(opportunity => ({
+      selector: opportunity.selector,
+      height: opportunity.height,
+      distanceFromViewport: opportunity.distanceFromViewport,
+      childElements: opportunity.childElements,
+      estimatedSavings: opportunity.estimatedSavings
+    }));
     if (opportunities.length > 20) void 0;
     opportunities.slice(0, 10).forEach((opp, i) => {
     });
   }
   return {
-    opportunities: opportunities.map(({element: element, ...rest}) => rest),
+    opportunities: opportunities.map(opportunity => ({
+      selector: opportunity.selector,
+      height: opportunity.height,
+      distanceFromViewport: opportunity.distanceFromViewport,
+      childElements: opportunity.childElements,
+      estimatedSavings: opportunity.estimatedSavings
+    })),
     totalElements: opportunities.length,
     highImpact: opportunities.filter(o => o.estimatedSavings.startsWith("High")).length,
     elements: opportunities.map(o => o.element)
   };
 }
+
+window.analyzeContentVisibilityOpportunities = analyzeContentVisibilityOpportunities;
 
 (() => {
   const cvResults = detectContentVisibility();

@@ -125,7 +125,7 @@ Scripts using `PerformanceObserver` with `buffered: true` can read the same data
 })();
 ```
 
-**Scripts using this pattern:** LCP, CLS, LCP-Sub-Parts, LCP-Trail, LCP-Image-Entropy, Event-Processing-Time, Long-Animation-Frames (buffered LoAFs), LongTask (buffered tasks).
+**Scripts using this pattern:** LCP, CLS, LCP-Subparts, LCP-Trail, LCP-Image-Entropy, Event-Processing-Time, Long-Animation-Frames (buffered LoAFs), LongTask (buffered tasks).
 
 ### Pattern 3: Tracking observers
 
@@ -238,10 +238,10 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
 ]
 ```
 
-#### LCP-Sub-Parts
+#### LCP-Subparts
 ```json
 {
-  "script": "LCP-Sub-Parts",
+  "script": "LCP-Subparts",
   "status": "ok",
   "metric": "LCP",
   "value": 2100,

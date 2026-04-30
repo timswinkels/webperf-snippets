@@ -11,6 +11,12 @@ Analyze all @media rules in CSS stylesheets to identify classes and properties t
 
 **Script:** `scripts/CSS-Media-Queries-Analysis.js`
 ---
+## Cache Strategy Analysis
+
+Audits HTTP caching strategies across all page resources, identifying resources without cache, short-lived cache configurations, cache anti-patterns, and CDN cache hit rates. Provides a cache efficiency score and actionable recommendations.
+
+**Script:** `scripts/Cache-Strategy-Analysis.js`
+---
 ## Client-Side Redirect Detection
 
 Detects client-side redirects that add unnecessary latency to page load and impact Core Web Vitals, particularly LCP. Client-side redirects implemented via JavaScript or SPA routers can add seconds to the critical rendering path, yet they're often invisible to standard monitoring tools.
