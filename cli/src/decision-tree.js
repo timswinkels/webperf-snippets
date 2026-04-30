@@ -3,7 +3,7 @@
 const RULES = [
   {
     when: (r) => r.id === "LCP" && r.status === "ok" && r.value > 2500,
-    append: { id: "LCP-Sub-Parts", path: "CoreWebVitals/LCP-Sub-Parts" },
+    append: { id: "LCP-Subparts", path: "CoreWebVitals/LCP-Subparts" },
     reason: "LCP > 2.5s — drilling into sub-parts",
   },
 ];

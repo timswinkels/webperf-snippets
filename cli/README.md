@@ -29,7 +29,7 @@ npx webperf-snippets <url> [options]
 
 ### Examples
 
-Run the default Core Web Vitals workflow (LCP + CLS, plus LCP-Sub-Parts if LCP > 2.5s):
+Run the default Core Web Vitals workflow (LCP + CLS, plus LCP-Subparts if LCP > 2.5s):
 
 ```bash
 npx webperf-snippets https://web.dev
@@ -44,7 +44,7 @@ npx webperf-snippets https://web.dev --json
 Single snippet:
 
 ```bash
-npx webperf-snippets https://example.com --snippet LCP-Sub-Parts
+npx webperf-snippets https://example.com --snippet LCP-Subparts
 ```
 
 CI gating:
@@ -117,7 +117,7 @@ The `NPM_TOKEN` secret must be set in the repository settings with publish acces
 - **No INP**: INP requires real user interactions. v0.2 will support synthetic interaction scripts.
 - **CLS in headless is conservative**: layout shifts that only happen on scroll are missed unless you script the scroll.
 - **First navigation only**: each `webperf-snippets` invocation runs one URL. SPAs need the post-route URL passed directly.
-- **Decision-tree follow-ups re-navigate**: when a follow-up snippet fires (e.g. LCP-Sub-Parts), the page is loaded again. v0.2 will share a single page session.
+- **Decision-tree follow-ups re-navigate**: when a follow-up snippet fires (e.g. LCP-Subparts), the page is loaded again. v0.2 will share a single page session.
 
 ## Roadmap
 

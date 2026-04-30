@@ -7,21 +7,21 @@ describe("nextSteps", () => {
     expect(nextSteps(results)).toEqual([]);
   });
 
-  it("appends LCP-Sub-Parts when LCP > 2500ms", () => {
+  it("appends LCP-Subparts when LCP > 2500ms", () => {
     const results = [{ id: "LCP", status: "ok", value: 3000 }];
     const steps = nextSteps(results);
     expect(steps).toHaveLength(1);
-    expect(steps[0].id).toBe("LCP-Sub-Parts");
-    expect(steps[0].path).toBe("CoreWebVitals/LCP-Sub-Parts");
+    expect(steps[0].id).toBe("LCP-Subparts");
+    expect(steps[0].path).toBe("CoreWebVitals/LCP-Subparts");
     expect(steps[0].reason).toMatch(/LCP > 2\.5s/);
   });
 
-  it("does not append LCP-Sub-Parts when LCP === 2500ms (boundary)", () => {
+  it("does not append LCP-Subparts when LCP === 2500ms (boundary)", () => {
     const results = [{ id: "LCP", status: "ok", value: 2500 }];
     expect(nextSteps(results)).toEqual([]);
   });
 
-  it("does not append LCP-Sub-Parts when LCP status is error", () => {
+  it("does not append LCP-Subparts when LCP status is error", () => {
     const results = [{ id: "LCP", status: "error", value: 3000 }];
     expect(nextSteps(results)).toEqual([]);
   });

@@ -14,7 +14,7 @@ const WORKFLOWS = {
 const SNIPPET_ALIASES = {
   LCP: "CoreWebVitals/LCP",
   CLS: "CoreWebVitals/CLS",
-  "LCP-Sub-Parts": "CoreWebVitals/LCP-Sub-Parts",
+  "LCP-Subparts": "CoreWebVitals/LCP-Subparts",
   fonts: "Loading/Fonts-Preloaded-Loaded-and-used-above-the-fold",
   "Fonts-Preloaded-Loaded-and-used-above-the-fold":
     "Loading/Fonts-Preloaded-Loaded-and-used-above-the-fold",
@@ -38,7 +38,7 @@ Options:
 Examples:
   npx webperf-snippets https://web.dev
   npx webperf-snippets https://example.com --json
-  npx webperf-snippets https://example.com --snippet LCP-Sub-Parts
+  npx webperf-snippets https://example.com --snippet LCP-Subparts
   npx webperf-snippets https://example.com --snippet fonts
   npx webperf-snippets https://example.com --budget-lcp 2500
 `;
