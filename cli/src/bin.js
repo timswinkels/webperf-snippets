@@ -26,7 +26,7 @@ Run curated WebPerf Snippets headlessly via Playwright.
 
 Options:
   --workflow <name>     Workflow to run (default: core-web-vitals)
-  --snippet <name>      Run a single snippet (e.g. LCP, CLS, or Category/Name)
+  --snippet <name>      Run a single snippet (e.g. LCP, CLS, LCP-Subparts, fonts, or Category/Name)
   --json                Output JSON instead of formatted text
   --viewport <preset>   Viewport preset: mobile (default), tablet, desktop
   --wait <ms>           Post-load wait before evaluating (default: 3000)
