@@ -35,6 +35,9 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e --prefix cli
 
+      - name: Prepare snippets for publishing
+        run: cp -r snippets cli/
+
       - name: Publish to npm
         run: npm publish
         working-directory: cli

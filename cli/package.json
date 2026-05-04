@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "description": "Run curated WebPerf Snippets headlessly via Playwright. Diagnose Core Web Vitals beyond what Lighthouse exposes.",
   "type": "module",
-  "bin": {
-    "webperf-snippets": "./src/bin.js"
-  },
+  "bin": "./src/bin.js",
   "files": [
     "src",
     "snippets",
@@ -36,6 +34,9 @@
   ],
   "author": "Joan Leon | @nucliweb",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nucliweb/webperf-snippets.git",
