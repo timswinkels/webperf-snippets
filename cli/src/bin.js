@@ -65,17 +65,18 @@ Options:
   --wait <ms>           Post-load wait before evaluating (default: 3000)
   --budget-lcp <ms>     Exit 1 if LCP exceeds this value
   --budget-cls <score>  Exit 1 if CLS exceeds this value
+  --verbose             Show all items, even for passing checks
   --headed              Show the browser window (debug)
   -h, --help            Show this help
 
 Examples:
   npx webperf-snippets https://web.dev
-  npx webperf-snippets https://example.com --workflow audit
-  npx webperf-snippets https://example.com --json
-  npx webperf-snippets https://example.com --snippet LCP-Subparts
-  npx webperf-snippets https://example.com --snippet render-blocking
-  npx webperf-snippets https://example.com --snippet fonts
-  npx webperf-snippets https://example.com --budget-lcp 2500
+  npx webperf-snippets https://web.dev --workflow audit
+  npx webperf-snippets https://web.dev --json
+  npx webperf-snippets https://web.dev --snippet LCP-Subparts
+  npx webperf-snippets https://web.dev --snippet render-blocking
+  npx webperf-snippets https://web.dev --snippet fonts
+  npx webperf-snippets https://web.dev --budget-lcp 2500
 `;
 
 function fail(message, code = 2) {
@@ -131,6 +132,7 @@ async function main() {
         "budget-lcp": { type: "string" },
         "budget-cls": { type: "string" },
         viewport: { type: "string" },
+        verbose: { type: "boolean" },
         headed: { type: "boolean" },
         help: { type: "boolean", short: "h" },
       },
@@ -202,7 +204,7 @@ async function main() {
     pageErrors: [...initial.pageErrors, ...(followUpRun.pageErrors ?? [])],
   };
 
-  const output = values.json ? reportJson(payload) : reportHuman(payload);
+  const output = values.json ? reportJson(payload) : reportHuman({ ...payload, verbose: values.verbose });
   process.stdout.write(output + "\n");
 
   // Exit codes.

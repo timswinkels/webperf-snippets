@@ -21,13 +21,13 @@ A curated collection of JavaScript snippets to measure and debug Web Performance
 
 ## What you can measure
 
-| Category | What it includes |
-|----------|------------------|
-| **[Core Web Vitals](/CoreWebVitals/LCP)** | CLS, INP, LCP, LCP Image Entropy, LCP Sub-Parts, LCP Trail, LCP Video Candidate |
-| **[Loading](/Loading/TTFB)** | TTFB, JS Execution Time Breakdown, FCP, Back/Forward Cache, CSS Media Queries Analysis, Critical CSS Detection, SSR Hydration Data Analysis, Validate Preload on Async/Defer Scripts, Prefetch Resource Validation, Priority Hints Audit, Service Worker Analysis |
-| **[Interaction](/Interaction/Long-Animation-Frames)** | Interactions, Input Latency Breakdown, Layout Shift, Long Animation Frames, Long Task, Scroll Performance |
-| **[Resources](/Resources/Network-Bandwidth-Connection-Quality)** | Network Bandwidth & Connection Quality |
-| **[Media](/Media/Image-Element-Audit)** | Image Element Audit, Video Element Audit |
+| Category                                                         | What it includes                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[Core Web Vitals](/CoreWebVitals/LCP)**                        | CLS, INP, LCP, LCP Image Entropy, LCP Sub-Parts, LCP Trail, LCP Video Candidate                                                                                                                                                                                   |
+| **[Loading](/Loading/TTFB)**                                     | TTFB, JS Execution Time Breakdown, FCP, Back/Forward Cache, CSS Media Queries Analysis, Critical CSS Detection, SSR Hydration Data Analysis, Validate Preload on Async/Defer Scripts, Prefetch Resource Validation, Priority Hints Audit, Service Worker Analysis |
+| **[Interaction](/Interaction/Long-Animation-Frames)**            | Interactions, Input Latency Breakdown, Layout Shift, Long Animation Frames, Long Task, Scroll Performance                                                                                                                                                         |
+| **[Resources](/Resources/Network-Bandwidth-Connection-Quality)** | Network Bandwidth & Connection Quality                                                                                                                                                                                                                            |
+| **[Media](/Media/Image-Element-Audit)**                          | Image Element Audit, Video Element Audit                                                                                                                                                                                                                          |
 
 ## Quick Start
 
@@ -44,7 +44,9 @@ new PerformanceObserver((l) => {
 
 new PerformanceObserver((l) => {
   let cls = 0;
-  l.getEntries().forEach((e) => { if (!e.hadRecentInput) cls += e.value; });
+  l.getEntries().forEach((e) => {
+    if (!e.hadRecentInput) cls += e.value;
+  });
   console.log(`CLS: ${cls.toFixed(3)}`);
 }).observe({ type: "layout-shift", buffered: true });
 ```
@@ -97,18 +99,34 @@ Available skills: `webperf`, `webperf-core-web-vitals`, `webperf-loading`, `webp
 
 WebPerf Snippets powers a set of [Agent Skills](https://github.com/nucliweb/webperf-snippets/tree/main/.claude/skills) for autonomous performance audits. Instead of copying and pasting snippets manually, an AI agent executes them deterministically through Chrome DevTools MCP — the same code, every time, across sessions and models.
 
-| Skill | What it covers |
-|-------|---------------|
-| `webperf` | General-purpose performance audit entry point |
-| `webperf-core-web-vitals` | LCP, CLS, INP with guided diagnosis workflows |
-| `webperf-loading` | TTFB, FCP, render-blocking, fonts, scripts, resource hints |
-| `webperf-interaction` | INP, long tasks, scroll jank, animation frames |
-| `webperf-media` | Image and video audits, lazy loading, LCP media |
-| `webperf-resources` | Network quality, adaptive loading strategies |
+| Skill                     | What it covers                                             |
+| ------------------------- | ---------------------------------------------------------- |
+| `webperf`                 | General-purpose performance audit entry point              |
+| `webperf-core-web-vitals` | LCP, CLS, INP with guided diagnosis workflows              |
+| `webperf-loading`         | TTFB, FCP, render-blocking, fonts, scripts, resource hints |
+| `webperf-interaction`     | INP, long tasks, scroll jank, animation frames             |
+| `webperf-media`           | Image and video audits, lazy loading, LCP media            |
+| `webperf-resources`       | Network quality, adaptive loading strategies               |
 
 The skills include decision trees that automatically trigger deeper analysis when thresholds are exceeded — for example, when TTFB is slow, the agent runs TTFB sub-parts diagnostics to pinpoint whether the issue is DNS, connection, or backend latency.
 
 → [Read more about WebPerf Agent Skills](https://joanleon.dev/en/webperf-snippets-agent-skills/)
+
+## CLI
+
+Run the same curated snippets headlessly via Playwright — no copy-pasting into DevTools. Diagnose LCP regressions in CI, gate pull requests on real performance budgets, and automate the audits you already run by hand.
+
+```bash copy
+npx webperf-snippets https://web.dev --workflow audit
+npx webperf-snippets https://web.dev --budget-lcp 2500 --budget-cls 0.1
+```
+
+| Workflow          | What it runs                                                         |
+| ----------------- | -------------------------------------------------------------------- |
+| `core-web-vitals` | LCP, CLS — with automatic LCP-Subparts follow-up                     |
+| `audit`           | Render-blocking, resource hints, critical CSS, TTFB, scripts, images |
+
+→ [CLI documentation](/CLI)
 
 ## Resources
 

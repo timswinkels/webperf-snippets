@@ -19,5 +19,8 @@
   },
   "DevTools-Overrides": {
     "title": "DevTools Overrides"
+  },
+  "CLI": {
+    "title": "CLI"
   }
 }
