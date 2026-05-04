@@ -31,6 +31,15 @@
     })
     .sort((a, b) => b.responseEnd - a.responseEnd);
 
+  const lastBlockingEnd = blockingResources.length
+    ? Math.max(...blockingResources.map((r) => r.responseEnd))
+    : 0;
+  const totalSizeBytes = blockingResources.reduce((sum, r) => sum + r.size, 0);
+  const byType = blockingResources.reduce((acc, r) => {
+    acc[r.type] = (acc[r.type] || 0) + 1;
+    return acc;
+  }, {});
+
   console.group("%c🚧 Render-Blocking Resources", "font-weight: bold; font-size: 14px;");
 
   if (blockingResources.length === 0) {
@@ -45,14 +54,6 @@
     console.log("   • Scripts use async or defer attributes");
     console.log("   • Critical resources are optimized");
   } else {
-    // Calculate metrics
-    const lastBlockingEnd = Math.max(...blockingResources.map((r) => r.responseEnd));
-    const totalSize = blockingResources.reduce((sum, r) => sum + r.size, 0);
-    const byType = blockingResources.reduce((acc, r) => {
-      acc[r.type] = (acc[r.type] || 0) + 1;
-      return acc;
-    }, {});
-
     // Summary
     console.log(
       `%c⚠️ Found ${blockingResources.length} render-blocking resource(s)`,
@@ -63,8 +64,8 @@
     console.log("%c📊 Impact Summary:", "font-weight: bold;");
     console.log(`   Rendering blocked until: ${lastBlockingEnd.toFixed(0)}ms`);
     console.log(`   Total blocking resources: ${blockingResources.length}`);
-    if (totalSize > 0) {
-      const sizeKB = (totalSize / 1024).toFixed(1);
+    if (totalSizeBytes > 0) {
+      const sizeKB = (totalSizeBytes / 1024).toFixed(1);
       console.log(`   Total size: ${sizeKB} KB`);
     }
     console.log(`   By type: ${Object.entries(byType).map(([k, v]) => `${k} (${v})`).join(", ")}`);
@@ -134,9 +135,6 @@
 
   console.groupEnd();
 
-  const lastBlockingEnd = blockingResources.length ? Math.max(...blockingResources.map((r) => r.responseEnd)) : 0;
-  const totalSizeBytes = blockingResources.reduce((sum, r) => sum + r.size, 0);
-  const byType = blockingResources.reduce((acc, r) => { acc[r.type] = (acc[r.type] || 0) + 1; return acc; }, {});
   return {
     script: "Find-render-blocking-resources",
     status: "ok",
