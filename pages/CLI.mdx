@@ -43,11 +43,33 @@ JSON output (for piping into `jq` or CI scripts):
 npx webperf-snippets https://web.dev --json
 ```
 
-Run a single snippet:
+Run a single snippet by alias:
 
 ```bash copy
 npx webperf-snippets https://web.dev --snippet LCP-Subparts
+npx webperf-snippets https://web.dev --snippet render-blocking
+npx webperf-snippets https://web.dev --snippet fonts
 ```
+
+### Snippet aliases
+
+| Alias | Snippet | Category |
+| ----- | ------- | -------- |
+| `LCP` | Largest Contentful Paint | Core Web Vitals |
+| `CLS` | Cumulative Layout Shift | Core Web Vitals |
+| `LCP-Subparts` | LCP Subparts breakdown | Core Web Vitals |
+| `fonts` | Fonts Preloaded, Loaded, and Used Above The Fold | Loading |
+| `render-blocking` | Find render-blocking resources | Loading |
+| `resource-hints` | Resource Hints Validation | Loading |
+| `preload-scripts` | Validate Preload / Async / Defer Scripts | Loading |
+| `priority-hints` | Priority Hints Audit | Loading |
+| `critical-css` | Critical CSS Detection | Loading |
+| `ttfb` | TTFB Sub-Parts | Loading |
+| `script-parties` | First and Third-Party Script Info | Loading |
+| `script-loading` | Script Loading | Loading |
+| `lazy-atf` | Above-the-fold lazy-loaded images | Loading |
+| `lazy-conflict` | Images with `lazy` + `fetchpriority` conflict | Loading |
+| `eager-below-fold` | Non-lazy images outside viewport | Loading |
 
 Gate CI on performance budgets:
 
@@ -55,18 +77,39 @@ Gate CI on performance budgets:
 npx webperf-snippets https://web.dev --budget-lcp 2500 --budget-cls 0.1
 ```
 
+Run the structural audit workflow:
+
+```bash copy
+npx webperf-snippets https://web.dev --workflow audit
+```
+
+Simulate a mobile viewport (default) or switch to desktop:
+
+```bash copy
+npx webperf-snippets https://web.dev --viewport mobile
+npx webperf-snippets https://web.dev --viewport desktop
+```
+
+Show all items, including passing checks:
+
+```bash copy
+npx webperf-snippets https://web.dev --verbose
+```
+
 ### Options
 
-| Option                 | Description                                                 |
-| ---------------------- | ----------------------------------------------------------- |
-| `--workflow <name>`    | Workflow to run. Default: `core-web-vitals`.                |
-| `--snippet <name>`     | Run a single snippet (`LCP`, `CLS`, or `Category/Name`).    |
-| `--json`               | Output JSON instead of formatted text.                      |
-| `--wait <ms>`          | Post-load wait before evaluating snippets. Default: `3000`. |
-| `--budget-lcp <ms>`    | Exit `1` if LCP exceeds this value.                         |
-| `--budget-cls <score>` | Exit `1` if CLS exceeds this value.                         |
-| `--headed`             | Show the browser window (debug).                            |
-| `-h, --help`           | Show help.                                                  |
+| Option                  | Description                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| `--workflow <name>`     | Workflow to run. Default: `core-web-vitals`. Options: `core-web-vitals`, `audit`.    |
+| `--snippet <name>`      | Run a single snippet by alias or `Category/Name` path.                               |
+| `--json`                | Output JSON instead of formatted text.                                               |
+| `--viewport <preset>`   | Viewport preset. Default: `mobile`. Options: `mobile`, `tablet`, `desktop`.          |
+| `--wait <ms>`           | Post-load wait before evaluating snippets. Default: `3000`.                          |
+| `--budget-lcp <ms>`     | Exit `1` if LCP exceeds this value.                                                  |
+| `--budget-cls <score>`  | Exit `1` if CLS exceeds this value.                                                  |
+| `--verbose`             | Show all items, including passing checks.                                            |
+| `--headed`              | Show the browser window (debug).                                                     |
+| `-h, --help`            | Show help.                                                                           |
 
 ### Exit codes
 
