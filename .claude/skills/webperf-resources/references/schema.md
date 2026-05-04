@@ -85,8 +85,15 @@ Scripts that read DOM or `performance.getEntriesByType()` directly. Return JSON 
   console.log(`TTFB: ${value}ms (${rating})`);
 
   // Agent output
-  return { script: "TTFB", status: "ok", metric: "TTFB", value, unit: "ms", rating,
-           thresholds: { good: 800, needsImprovement: 1800 } };
+  return {
+    script: "TTFB",
+    status: "ok",
+    metric: "TTFB",
+    value,
+    unit: "ms",
+    rating,
+    thresholds: { good: 800, needsImprovement: 1800 },
+  };
 })();
 ```
 
@@ -137,11 +144,12 @@ return {
   script: "INP",
   status: "tracking",
   message: "INP tracking active. Interact with the page then call getINP() for results.",
-  getDataFn: "getINP"
+  getDataFn: "getINP",
 };
 ```
 
 **Agent workflow for tracking scripts:**
+
 ```
 1. evaluate_script(INP.js)          → { status: "tracking", getDataFn: "getINP" }
 2. (user interacts with the page)
@@ -167,6 +175,7 @@ Keep the existing `async () => {}` wrapper. Add a `return` statement with struct
 ### Core Web Vitals
 
 #### LCP
+
 ```json
 {
   "script": "LCP",
@@ -179,14 +188,16 @@ Keep the existing `async () => {}` wrapper. Add a `return` statement with struct
   "details": {
     "element": "img.hero",
     "elementType": "Image",
-    "url": "https://example.com/hero.jpg",
+    "url": "https://web.dev/hero.jpg",
     "sizePixels": 756000
   }
 }
 ```
 
 #### CLS
+
 Returns buffered CLS immediately and keeps tracking. Always call `getCLS()` after interactions to get an updated value.
+
 ```json
 {
   "script": "CLS",
@@ -200,9 +211,11 @@ Returns buffered CLS immediately and keeps tracking. Always call `getCLS()` afte
   "getDataFn": "getCLS"
 }
 ```
+
 `getCLS()` returns the same shape with the latest accumulated value.
 
 #### INP (tracking)
+
 ```json
 {
   "script": "INP",
@@ -211,7 +224,9 @@ Returns buffered CLS immediately and keeps tracking. Always call `getCLS()` afte
   "getDataFn": "getINP"
 }
 ```
+
 `getINP()` returns:
+
 ```json
 {
   "script": "INP",
@@ -228,17 +243,24 @@ Returns buffered CLS immediately and keeps tracking. Always call `getCLS()` afte
   }
 }
 ```
+
 If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "getINP"` — retry after user interaction.
 
 `getINPDetails()` returns the full sorted interaction list (array of up to 15 entries). Use when `getINP()` shows poor INP and you need to identify patterns across multiple slow interactions:
+
 ```json
 [
-  { "formattedName": "click → button.submit", "duration": 450, "startTime": 1200,
-    "phases": { "inputDelay": 120, "processingTime": 280, "presentationDelay": 50 } }
+  {
+    "formattedName": "click → button.submit",
+    "duration": 450,
+    "startTime": 1200,
+    "phases": { "inputDelay": 120, "processingTime": 280, "presentationDelay": 50 }
+  }
 ]
 ```
 
 #### LCP-Subparts
+
 ```json
 {
   "script": "LCP-Subparts",
@@ -263,6 +285,7 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
 ```
 
 #### LCP-Trail
+
 ```json
 {
   "script": "LCP-Trail",
@@ -277,13 +300,20 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
     "finalElement": "img.hero",
     "candidates": [
       { "index": 1, "selector": "h1", "time": 800, "elementType": "Text block" },
-      { "index": 2, "selector": "img.hero", "time": 1240, "elementType": "Image", "url": "hero.jpg" }
+      {
+        "index": 2,
+        "selector": "img.hero",
+        "time": 1240,
+        "elementType": "Image",
+        "url": "hero.jpg"
+      }
     ]
   }
 }
 ```
 
 #### LCP-Image-Entropy
+
 ```json
 {
   "script": "LCP-Image-Entropy",
@@ -300,13 +330,23 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
     }
   },
   "items": [
-    { "url": "hero.jpg", "width": 1200, "height": 630, "fileSizeBytes": 156000, "bpp": 1.65, "isLowEntropy": false, "lcpEligible": true, "isLCP": true }
+    {
+      "url": "hero.jpg",
+      "width": 1200,
+      "height": 630,
+      "fileSizeBytes": 156000,
+      "bpp": 1.65,
+      "isLowEntropy": false,
+      "lcpEligible": true,
+      "isLCP": true
+    }
   ],
   "issues": []
 }
 ```
 
 #### LCP-Video-Candidate
+
 ```json
 {
   "script": "LCP-Video-Candidate",
@@ -318,7 +358,7 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
   "thresholds": { "good": 2500, "needsImprovement": 4000 },
   "details": {
     "isVideo": true,
-    "posterUrl": "https://example.com/hero.avif",
+    "posterUrl": "https://web.dev/hero.avif",
     "posterFormat": "avif",
     "posterPreloaded": true,
     "fetchpriorityOnPreload": "high",
@@ -332,6 +372,7 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
 ### Loading
 
 #### TTFB
+
 ```json
 {
   "script": "TTFB",
@@ -345,6 +386,7 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
 ```
 
 #### TTFB-Sub-Parts
+
 ```json
 {
   "script": "TTFB-Sub-Parts",
@@ -369,6 +411,7 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
 ```
 
 #### Find-render-blocking-resources
+
 ```json
 {
   "script": "Find-render-blocking-resources",
@@ -380,12 +423,20 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
     "byType": { "link": 2, "script": 1 }
   },
   "items": [
-    { "type": "link", "url": "https://example.com/style.css", "shortName": "style.css", "responseEndMs": 450, "durationMs": 200, "sizeBytes": 45000 }
+    {
+      "type": "link",
+      "url": "https://web.dev/style.css",
+      "shortName": "style.css",
+      "responseEndMs": 450,
+      "durationMs": 200,
+      "sizeBytes": 45000
+    }
   ]
 }
 ```
 
 #### Script-Loading
+
 ```json
 {
   "script": "Script-Loading",
@@ -399,7 +450,15 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
     "thirdPartyBlockingCount": 1
   },
   "items": [
-    { "url": "https://example.com/app.js", "shortName": "app.js", "strategy": "blocking", "location": "head", "party": "first", "sizeBytes": 85000, "durationMs": 120 }
+    {
+      "url": "https://web.dev/app.js",
+      "shortName": "app.js",
+      "strategy": "blocking",
+      "location": "head",
+      "party": "first",
+      "sizeBytes": 85000,
+      "durationMs": 120
+    }
   ],
   "issues": [
     { "severity": "error", "message": "2 blocking scripts in <head>" },
@@ -411,6 +470,7 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
 ### Interaction
 
 #### Interactions (tracking)
+
 ```json
 {
   "script": "Interactions",
@@ -421,6 +481,7 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
 ```
 
 #### Input-Latency-Breakdown (tracking)
+
 ```json
 {
   "script": "Input-Latency-Breakdown",
@@ -431,7 +492,9 @@ If no interactions yet, `getINP()` returns `status: "error"` with `getDataFn: "g
 ```
 
 #### Layout-Shift-Loading-and-Interaction
+
 Immediately returns buffered CLS data, plus exposes summary function for ongoing tracking.
+
 ```json
 {
   "script": "Layout-Shift-Loading-and-Interaction",
@@ -453,7 +516,9 @@ Immediately returns buffered CLS data, plus exposes summary function for ongoing
 ```
 
 #### Long-Animation-Frames
+
 Returns buffered LoAF data immediately. Ongoing tracking continues.
+
 ```json
 {
   "script": "Long-Animation-Frames",
@@ -471,7 +536,9 @@ Returns buffered LoAF data immediately. Ongoing tracking continues.
 ```
 
 #### Long-Animation-Frames-Script-Attribution
+
 Returns buffered LoAF data immediately (do not wait for a timer):
+
 ```json
 {
   "script": "Long-Animation-Frames-Script-Attribution",
@@ -485,13 +552,12 @@ Returns buffered LoAF data immediately (do not wait for a timer):
       "framework": { "durationMs": 30, "count": 1 }
     }
   },
-  "items": [
-    { "file": "app.js", "category": "first-party", "durationMs": 180, "count": 3 }
-  ]
+  "items": [{ "file": "app.js", "category": "first-party", "durationMs": 180, "count": 3 }]
 }
 ```
 
 #### Scroll-Performance (tracking)
+
 ```json
 {
   "script": "Scroll-Performance",
@@ -510,7 +576,9 @@ Returns buffered LoAF data immediately (do not wait for a timer):
 ```
 
 #### LongTask
+
 Returns buffered long tasks immediately. Ongoing tracking continues.
+
 ```json
 {
   "script": "LongTask",
@@ -529,6 +597,7 @@ Returns buffered long tasks immediately. Ongoing tracking continues.
 ### Media
 
 #### Image-Element-Audit (async)
+
 ```json
 {
   "script": "Image-Element-Audit",
@@ -567,32 +636,34 @@ Returns buffered long tasks immediately. Ongoing tracking continues.
     }
   ],
   "issues": [
-    { "severity": "warning", "message": "img.thumbnail: Missing width/height attributes (CLS risk)" }
+    {
+      "severity": "warning",
+      "message": "img.thumbnail: Missing width/height attributes (CLS risk)"
+    }
   ]
 }
 ```
 
 #### Video-Element-Audit
+
 Same shape as Image-Element-Audit but for video elements.
 
 #### SVG-Embedded-Bitmap-Analysis
+
 ```json
 {
   "script": "SVG-Embedded-Bitmap-Analysis",
   "status": "ok",
   "count": 2,
-  "items": [
-    { "url": "icon.svg", "hasBitmap": true, "bitmapType": "image/png", "sizeBytes": 4500 }
-  ],
-  "issues": [
-    { "severity": "warning", "message": "2 SVG files contain embedded bitmaps" }
-  ]
+  "items": [{ "url": "icon.svg", "hasBitmap": true, "bitmapType": "image/png", "sizeBytes": 4500 }],
+  "issues": [{ "severity": "warning", "message": "2 SVG files contain embedded bitmaps" }]
 }
 ```
 
 ### Resources
 
 #### Network-Bandwidth-Connection-Quality
+
 ```json
 {
   "script": "Network-Bandwidth-Connection-Quality",

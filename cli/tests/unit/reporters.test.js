@@ -3,7 +3,7 @@ import { reportJson } from "../../src/reporters/json.js";
 import { reportHuman } from "../../src/reporters/human.js";
 
 const samplePayload = {
-  url: "https://example.com",
+  url: "https://web.dev",
   navMs: 850,
   results: [
     { id: "LCP", status: "ok", metric: "LCP", value: 1200, unit: "ms", rating: "good" },
@@ -20,7 +20,7 @@ describe("reportJson", () => {
 
   it("includes url, navMs, and results", () => {
     const parsed = JSON.parse(reportJson(samplePayload));
-    expect(parsed.url).toBe("https://example.com");
+    expect(parsed.url).toBe("https://web.dev");
     expect(parsed.navMs).toBe(850);
     expect(parsed.results).toHaveLength(2);
   });
@@ -41,7 +41,7 @@ describe("reportJson", () => {
 describe("reportHuman", () => {
   it("includes the URL in the output", () => {
     const output = reportHuman(samplePayload);
-    expect(output).toContain("https://example.com");
+    expect(output).toContain("https://web.dev");
   });
 
   it("includes metric IDs", () => {
@@ -67,7 +67,7 @@ describe("reportHuman", () => {
 
   it("renders fonts snippet result with counts and issues", () => {
     const payload = {
-      url: "https://example.com",
+      url: "https://web.dev",
       navMs: 500,
       results: [
         {
@@ -90,7 +90,7 @@ describe("reportHuman", () => {
 
   it("renders fonts snippet result with no issues as optimized", () => {
     const payload = {
-      url: "https://example.com",
+      url: "https://web.dev",
       navMs: 500,
       results: [
         {
@@ -111,7 +111,7 @@ describe("reportHuman", () => {
 
   it("renders audit result with no issues as passing", () => {
     const payload = {
-      url: "https://example.com",
+      url: "https://web.dev",
       navMs: 500,
       results: [
         {
@@ -133,7 +133,7 @@ describe("reportHuman", () => {
 
   it("renders audit result with error issues showing the message", () => {
     const payload = {
-      url: "https://example.com",
+      url: "https://web.dev",
       navMs: 500,
       results: [
         {
@@ -154,7 +154,7 @@ describe("reportHuman", () => {
 
   it("renders audit result with warning issues", () => {
     const payload = {
-      url: "https://example.com",
+      url: "https://web.dev",
       navMs: 500,
       results: [
         {

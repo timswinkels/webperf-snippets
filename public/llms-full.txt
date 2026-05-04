@@ -5898,7 +5898,7 @@ Analyzes all scripts loaded on the page, separating them into first-party (your 
       console.log(`%c⚠️ ${thirdMetrics.hosts.length} different third-party hosts:`, "font-weight: bold; color: #f59e0b;");
       console.log("   • Each host requires DNS lookup + connection");
       console.log("   • Use <link rel='preconnect'> for critical hosts");
-      console.log('%c   <link rel="preconnect" href="https://example.com">', "font-family: monospace; color: #22c55e;");
+      console.log('%c   <link rel="preconnect" href="https://web.dev">', "font-family: monospace; color: #22c55e;");
     }
 
     if (thirdMetrics.totalSize > 100 * 1024) {

@@ -1,5 +1,5 @@
-import snippet from '../../snippets/Loading/Cache-Strategy-Analysis.js?raw'
-import { Snippet } from '../../components/Snippet'
+import snippet from "../../snippets/Loading/Cache-Strategy-Analysis.js?raw";
+import { Snippet } from "../../components/Snippet";
 
 # Cache Strategy Analysis
 
@@ -34,12 +34,12 @@ flowchart TD
 
 **Why caching matters for performance:**
 
-| Metric | Impact |
-|--------|--------|
-| LCP | Cached resources load instantly — no network round-trip |
-| TTFB | CDN cache hits dramatically reduce server response time |
-| Bandwidth | Cached resources don't consume data (mobile users benefit) |
-| Repeat visits | Good caching makes subsequent page loads near-instant |
+| Metric        | Impact                                                     |
+| ------------- | ---------------------------------------------------------- |
+| LCP           | Cached resources load instantly — no network round-trip    |
+| TTFB          | CDN cache hits dramatically reduce server response time    |
+| Bandwidth     | Cached resources don't consume data (mobile users benefit) |
+| Repeat visits | Good caching makes subsequent page loads near-instant      |
 
 ### Snippet
 
@@ -51,20 +51,20 @@ flowchart TD
 
 Every resource is classified into one of these strategies:
 
-| Strategy | Cache-Control directive | Typical use case |
-|---------|------------------------|-----------------|
-| `immutable` | `max-age=31536000, immutable` | Versioned/hashed static assets |
-| `long` | `max-age > 86400` (> 1 day) | Static assets with long lifetime |
-| `medium` | `max-age 3600–86400` (1h–1d) | Semi-static content |
-| `short` | `max-age < 3600` (< 1h) | Frequently updated content |
-| `swr` | `stale-while-revalidate` | Content served stale while background refresh |
-| `must-revalidate` | `must-revalidate` + ETag/Last-Modified | Documents that must be fresh |
-| `no-cache` | `no-cache` or `max-age=0` | Forces revalidation every request |
-| `no-store` | `no-store` | Never cached (sensitive data) |
-| `expires-only` | Only `Expires` header, no `Cache-Control` | Legacy servers (outdated) |
-| `none` | No caching headers at all | Missing cache configuration |
-| `unknown (CORS)` | Cross-origin, headers not readable | Add `Timing-Allow-Origin` for visibility |
-| `cached (inferred)` | `transferSize=0` but no readable headers | Browser cached, strategy unknown |
+| Strategy            | Cache-Control directive                   | Typical use case                              |
+| ------------------- | ----------------------------------------- | --------------------------------------------- |
+| `immutable`         | `max-age=31536000, immutable`             | Versioned/hashed static assets                |
+| `long`              | `max-age > 86400` (> 1 day)               | Static assets with long lifetime              |
+| `medium`            | `max-age 3600–86400` (1h–1d)              | Semi-static content                           |
+| `short`             | `max-age < 3600` (< 1h)                   | Frequently updated content                    |
+| `swr`               | `stale-while-revalidate`                  | Content served stale while background refresh |
+| `must-revalidate`   | `must-revalidate` + ETag/Last-Modified    | Documents that must be fresh                  |
+| `no-cache`          | `no-cache` or `max-age=0`                 | Forces revalidation every request             |
+| `no-store`          | `no-store`                                | Never cached (sensitive data)                 |
+| `expires-only`      | Only `Expires` header, no `Cache-Control` | Legacy servers (outdated)                     |
+| `none`              | No caching headers at all                 | Missing cache configuration                   |
+| `unknown (CORS)`    | Cross-origin, headers not readable        | Add `Timing-Allow-Origin` for visibility      |
+| `cached (inferred)` | `transferSize=0` but no readable headers  | Browser cached, strategy unknown              |
 
 The **Cache Efficiency Score** shows what percentage of resources have an effective cache strategy (`immutable`, `long`, `medium`, `swr`, or `must-revalidate`).
 
@@ -83,28 +83,28 @@ Resources with `max-age < 3600` (less than 1 hour). Pay attention to:
 
 ### Cache Anti-patterns
 
-| Pattern | Severity | Meaning |
-|---------|----------|---------|
-| `static-no-store` | 🔴 Error | A JS, CSS, font, or image file has `no-store` — these should always be cacheable |
-| `large-no-cache` | 🔴 Error | A resource > 100 KB has no cache — significant bandwidth waste per visit |
-| `versioned-short-cache` | 🟡 Warning | A hashed URL has `max-age < 86400` — safe to use much longer TTL |
-| `expires-without-cc` | 🟡 Warning | Uses only `Expires` header — outdated, less reliable than `Cache-Control` |
-| `maxage-zero-static` | 🟡 Warning | Static asset with `max-age=0` — browser revalidates on every request |
-| `short-cache-static` | 🟡 Warning | Static asset with `max-age < 3600` — increase TTL for better performance |
-| `versioned-not-immutable` | 🔵 Info | Hashed URL without `immutable` — adding it avoids conditional GET requests |
+| Pattern                   | Severity   | Meaning                                                                          |
+| ------------------------- | ---------- | -------------------------------------------------------------------------------- |
+| `static-no-store`         | 🔴 Error   | A JS, CSS, font, or image file has `no-store` — these should always be cacheable |
+| `large-no-cache`          | 🔴 Error   | A resource > 100 KB has no cache — significant bandwidth waste per visit         |
+| `versioned-short-cache`   | 🟡 Warning | A hashed URL has `max-age < 86400` — safe to use much longer TTL                 |
+| `expires-without-cc`      | 🟡 Warning | Uses only `Expires` header — outdated, less reliable than `Cache-Control`        |
+| `maxage-zero-static`      | 🟡 Warning | Static asset with `max-age=0` — browser revalidates on every request             |
+| `short-cache-static`      | 🟡 Warning | Static asset with `max-age < 3600` — increase TTL for better performance         |
+| `versioned-not-immutable` | 🔵 Info    | Hashed URL without `immutable` — adding it avoids conditional GET requests       |
 
 ### CDN Cache Status
 
 Reads CDN-specific response headers to determine cache hit/miss per resource:
 
-| Header | CDN detected |
-|--------|-------------|
-| `CF-Cache-Status` | Cloudflare |
-| `X-Vercel-Cache` | Vercel Edge Network |
-| `X-Cache` | CloudFront or generic CDN |
-| `Age` | Generic proxy/CDN (presence = served from cache) |
-| `Via` | Any HTTP proxy |
-| `Server-Timing` | CDN that exposes cache info in Server-Timing |
+| Header            | CDN detected                                     |
+| ----------------- | ------------------------------------------------ |
+| `CF-Cache-Status` | Cloudflare                                       |
+| `X-Vercel-Cache`  | Vercel Edge Network                              |
+| `X-Cache`         | CloudFront or generic CDN                        |
+| `Age`             | Generic proxy/CDN (presence = served from cache) |
+| `Via`             | Any HTTP proxy                                   |
+| `Server-Timing`   | CDN that exposes cache info in Server-Timing     |
 
 A **CDN hit rate below 70%** usually indicates the CDN cache is cold, the TTL is too short, or cache-busting headers (`Cache-Control: no-store`, `Vary: *`) are preventing caching at the edge.
 
@@ -114,7 +114,7 @@ Header inspection (`Cache-Control`, `Expires`, CDN headers) requires issuing `HE
 
 ### Cross-origin resources
 
-Resources served from a different origin (different scheme, host, or port) than the current page are blocked by CORS unless the server sends `Access-Control-Allow-Origin`. This includes subdomains — `api.example.com` is cross-origin from `www.example.com`.
+Resources served from a different origin (different scheme, host, or port) than the current page are blocked by CORS unless the server sends `Access-Control-Allow-Origin`. This includes subdomains — `api.web.dev` is cross-origin from `www.web.dev`.
 
 Those resources appear as **"CORS-restricted"** in the output.
 

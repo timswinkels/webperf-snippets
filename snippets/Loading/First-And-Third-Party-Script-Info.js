@@ -67,10 +67,14 @@
   const firstMetrics = calcMetrics(firstParty);
   const thirdMetrics = calcMetrics(thirdParty);
   const totalScripts = scripts.length;
-  const thirdPartyPct = totalScripts > 0 ? ((thirdParty.length / totalScripts) * 100).toFixed(0) : 0;
+  const thirdPartyPct =
+    totalScripts > 0 ? ((thirdParty.length / totalScripts) * 100).toFixed(0) : 0;
 
   // Display results
-  console.group("%c📊 Script Analysis: First vs Third Party", "font-weight: bold; font-size: 14px;");
+  console.group(
+    "%c📊 Script Analysis: First vs Third Party",
+    "font-weight: bold; font-size: 14px;",
+  );
 
   // Overall summary
   console.log("");
@@ -85,7 +89,10 @@
 
   // First Party Section
   console.log("");
-  console.group(`%c🏠 First-Party Scripts (${firstParty.length})`, "color: #22c55e; font-weight: bold;");
+  console.group(
+    `%c🏠 First-Party Scripts (${firstParty.length})`,
+    "color: #22c55e; font-weight: bold;",
+  );
 
   if (firstParty.length === 0) {
     console.log("No first-party scripts found.");
@@ -109,13 +116,13 @@
 
   // Third Party Section
   console.log("");
-  console.group(`%c🌐 Third-Party Scripts (${thirdParty.length})`, "color: #ef4444; font-weight: bold;");
+  console.group(
+    `%c🌐 Third-Party Scripts (${thirdParty.length})`,
+    "color: #ef4444; font-weight: bold;",
+  );
 
   if (thirdParty.length === 0) {
-    console.log(
-      "%c✅ No third-party scripts found!",
-      "color: #22c55e; font-weight: bold;"
-    );
+    console.log("%c✅ No third-party scripts found!", "color: #22c55e; font-weight: bold;");
   } else {
     console.log(`   Total size: ${formatBytes(thirdMetrics.totalSize)}`);
     console.log(`   Render-blocking: ${thirdMetrics.blocking}`);
@@ -136,7 +143,9 @@
       .sort((a, b) => b[1].size - a[1].size)
       .forEach(([host, data]) => {
         const blockingMark = data.blocking > 0 ? " ⚠️" : "";
-        console.log(`      ${host}: ${data.count} script(s), ${formatBytes(data.size)}${blockingMark}`);
+        console.log(
+          `      ${host}: ${data.count} script(s), ${formatBytes(data.size)}${blockingMark}`,
+        );
       });
 
     console.log("");
@@ -160,23 +169,38 @@
 
     if (thirdMetrics.blocking > 0) {
       console.log("");
-      console.log("%c⚠️ Render-blocking third-party scripts:", "font-weight: bold; color: #ef4444;");
+      console.log(
+        "%c⚠️ Render-blocking third-party scripts:",
+        "font-weight: bold; color: #ef4444;",
+      );
       console.log("   • Load with 'async' or 'defer' attribute");
       console.log("   • Consider lazy-loading after user interaction");
-      console.log('%c   <script src="..." async></script>', "font-family: monospace; color: #22c55e;");
+      console.log(
+        '%c   <script src="..." async></script>',
+        "font-family: monospace; color: #22c55e;",
+      );
     }
 
     if (thirdMetrics.hosts.length > 3) {
       console.log("");
-      console.log(`%c⚠️ ${thirdMetrics.hosts.length} different third-party hosts:`, "font-weight: bold; color: #f59e0b;");
+      console.log(
+        `%c⚠️ ${thirdMetrics.hosts.length} different third-party hosts:`,
+        "font-weight: bold; color: #f59e0b;",
+      );
       console.log("   • Each host requires DNS lookup + connection");
       console.log("   • Use <link rel='preconnect'> for critical hosts");
-      console.log('%c   <link rel="preconnect" href="https://example.com">', "font-family: monospace; color: #22c55e;");
+      console.log(
+        '%c   <link rel="preconnect" href="https://web.dev">',
+        "font-family: monospace; color: #22c55e;",
+      );
     }
 
     if (thirdMetrics.totalSize > 100 * 1024) {
       console.log("");
-      console.log(`%c⚠️ Third-party scripts total ${formatBytes(thirdMetrics.totalSize)}:`, "font-weight: bold; color: #f59e0b;");
+      console.log(
+        `%c⚠️ Third-party scripts total ${formatBytes(thirdMetrics.totalSize)}:`,
+        "font-weight: bold; color: #f59e0b;",
+      );
       console.log("   • Audit necessity of each script");
       console.log("   • Consider self-hosting critical scripts");
       console.log("   • Look for lighter alternatives");
@@ -207,11 +231,39 @@
       thirdPartyBlockingCount: thirdMetrics.blocking,
       thirdPartyHostCount: thirdMetrics.hosts.length,
     },
-    items: scripts.map(s => ({ shortName: s.shortName, host: s.host, firstParty: s.firstParty, transferBytes: s.transferSize, durationMs: Math.round(s.duration), renderBlocking: s.renderBlocking })),
+    items: scripts.map((s) => ({
+      shortName: s.shortName,
+      host: s.host,
+      firstParty: s.firstParty,
+      transferBytes: s.transferSize,
+      durationMs: Math.round(s.duration),
+      renderBlocking: s.renderBlocking,
+    })),
     issues: [
-      ...(thirdMetrics.blocking > 0 ? [{ severity: "error", message: `${thirdMetrics.blocking} render-blocking third-party script(s)` }] : []),
-      ...(thirdMetrics.hosts.length > 3 ? [{ severity: "warning", message: `${thirdMetrics.hosts.length} different third-party hosts require separate DNS lookups` }] : []),
-      ...(thirdMetrics.totalSize > 100 * 1024 ? [{ severity: "warning", message: `Third-party scripts total ${Math.round(thirdMetrics.totalSize / 1024)} KB` }] : []),
+      ...(thirdMetrics.blocking > 0
+        ? [
+            {
+              severity: "error",
+              message: `${thirdMetrics.blocking} render-blocking third-party script(s)`,
+            },
+          ]
+        : []),
+      ...(thirdMetrics.hosts.length > 3
+        ? [
+            {
+              severity: "warning",
+              message: `${thirdMetrics.hosts.length} different third-party hosts require separate DNS lookups`,
+            },
+          ]
+        : []),
+      ...(thirdMetrics.totalSize > 100 * 1024
+        ? [
+            {
+              severity: "warning",
+              message: `Third-party scripts total ${Math.round(thirdMetrics.totalSize / 1024)} KB`,
+            },
+          ]
+        : []),
     ],
   };
 })();

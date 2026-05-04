@@ -1,5 +1,5 @@
-import snippet from '../../snippets/Loading/Back-Forward-Cache.js?raw'
-import { Snippet } from '../../components/Snippet'
+import snippet from "../../snippets/Loading/Back-Forward-Cache.js?raw";
+import { Snippet } from "../../components/Snippet";
 
 # Back/Forward Cache (bfcache)
 
@@ -13,10 +13,10 @@ bfcache is one of the most impactful performance optimizations available - it ca
 
 **bfcache Impact:**
 
-| Navigation Type | Load Time | User Experience |
-|----------------|-----------|-----------------|
-| Normal navigation | 1-3s | Wait, spinner |
-| bfcache restoration | 0ms | Instant |
+| Navigation Type     | Load Time | User Experience |
+| ------------------- | --------- | --------------- |
+| Normal navigation   | 1-3s      | Wait, spinner   |
+| bfcache restoration | 0ms       | Instant         |
 
 **How bfcache works:**
 
@@ -120,38 +120,40 @@ Page A → Page B → [Back] → Page A (full reload, 1-3s)
 
 ### Common Blockers and Solutions
 
-| Blocker | Why it blocks | Solution |
-|---------|--------------|----------|
-| **unload event** | Can't be reliably replayed | Use `pagehide` or `visibilitychange` |
-| **beforeunload** | Prevents navigation caching | Remove or use `pagehide` for cleanup |
-| **Cache-Control: no-store** | Tells browser not to cache | Change to `no-cache` or `private` |
-| **Open IndexedDB transaction** | State can't be serialized | Close transactions on `pagehide` |
-| **WebSocket connection** | Can't be suspended | Close on `pagehide`, reconnect on `pageshow` |
-| **Ongoing fetch/XHR** | Incomplete network state | Abort on `pagehide` |
-| **BroadcastChannel** | Can't be suspended | Close on `pagehide` |
+| Blocker                        | Why it blocks               | Solution                                     |
+| ------------------------------ | --------------------------- | -------------------------------------------- |
+| **unload event**               | Can't be reliably replayed  | Use `pagehide` or `visibilitychange`         |
+| **beforeunload**               | Prevents navigation caching | Remove or use `pagehide` for cleanup         |
+| **Cache-Control: no-store**    | Tells browser not to cache  | Change to `no-cache` or `private`            |
+| **Open IndexedDB transaction** | State can't be serialized   | Close transactions on `pagehide`             |
+| **WebSocket connection**       | Can't be suspended          | Close on `pagehide`, reconnect on `pageshow` |
+| **Ongoing fetch/XHR**          | Incomplete network state    | Abort on `pagehide`                          |
+| **BroadcastChannel**           | Can't be suspended          | Close on `pagehide`                          |
 
 ### Fixing Common Issues
 
 #### Issue 1: unload/beforeunload handlers
 
 **Bad:**
+
 ```javascript
-window.addEventListener('unload', () => {
+window.addEventListener("unload", () => {
   saveData(); // Blocks bfcache
 });
 
-window.addEventListener('beforeunload', () => {
-  return 'Are you sure?'; // Blocks bfcache
+window.addEventListener("beforeunload", () => {
+  return "Are you sure?"; // Blocks bfcache
 });
 ```
 
 **Good:**
+
 ```javascript
-window.addEventListener('pagehide', (event) => {
+window.addEventListener("pagehide", (event) => {
   // event.persisted tells you if page goes to bfcache
   if (event.persisted) {
     // Page will be cached, do minimal cleanup
-    console.log('Page going to bfcache');
+    console.log("Page going to bfcache");
   } else {
     // Page being discarded, do full cleanup
     saveData();
@@ -162,36 +164,40 @@ window.addEventListener('pagehide', (event) => {
 #### Issue 2: Cache-Control: no-store
 
 **Bad:**
+
 ```html
-<meta http-equiv="Cache-Control" content="no-store">
+<meta http-equiv="Cache-Control" content="no-store" />
 ```
 
 **Good:**
+
 ```html
 <!-- Remove the meta tag entirely, or use: -->
-<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache" />
 ```
 
 #### Issue 3: Open WebSocket
 
 **Bad:**
+
 ```javascript
-const ws = new WebSocket('wss://example.com');
+const ws = new WebSocket("wss://web.dev");
 // Connection stays open, blocks bfcache
 ```
 
 **Good:**
-```javascript
-const ws = new WebSocket('wss://example.com');
 
-window.addEventListener('pagehide', () => {
+```javascript
+const ws = new WebSocket("wss://web.dev");
+
+window.addEventListener("pagehide", () => {
   ws.close(); // Close on navigation
 });
 
-window.addEventListener('pageshow', (event) => {
+window.addEventListener("pageshow", (event) => {
   if (event.persisted) {
     // Reconnect after bfcache restore
-    ws = new WebSocket('wss://example.com');
+    ws = new WebSocket("wss://web.dev");
   }
 });
 ```
@@ -199,24 +205,26 @@ window.addEventListener('pageshow', (event) => {
 #### Issue 4: IndexedDB
 
 **Bad:**
+
 ```javascript
-const request = indexedDB.open('myDB');
+const request = indexedDB.open("myDB");
 request.onsuccess = () => {
   const db = request.result;
-  const transaction = db.transaction(['store'], 'readwrite');
+  const transaction = db.transaction(["store"], "readwrite");
   // Transaction stays open, blocks bfcache
 };
 ```
 
 **Good:**
+
 ```javascript
 let db;
-const request = indexedDB.open('myDB');
+const request = indexedDB.open("myDB");
 request.onsuccess = () => {
   db = request.result;
 };
 
-window.addEventListener('pagehide', () => {
+window.addEventListener("pagehide", () => {
   db?.close(); // Close connection
 });
 ```
@@ -228,21 +236,24 @@ window.addEventListener('pagehide', () => {
 ⚠️ **Important: Execution order matters!**
 
 **Correct order:**
+
 1. **First**: Open your page
 2. **Second**: Run this snippet (to register event listeners)
 3. **Third**: Navigate to another page (e.g., click a link)
 4. **Fourth**: Press browser Back button
 5. **Fifth**: Check console for results
 
-**Why this order?** The snippet needs to be listening for the `pageshow` event with `persisted: true` to detect bfcache restoration. If you run the snippet *after* clicking Back, you'll miss the restoration event.
+**Why this order?** The snippet needs to be listening for the `pageshow` event with `persisted: true` to detect bfcache restoration. If you run the snippet _after_ clicking Back, you'll miss the restoration event.
 
 **If you run the snippet after navigating back:**
+
 - ⚠️ You'll see a timing warning
 - ❌ Won't detect if page was restored from bfcache
 - ✅ Will still show `NotRestoredReasons` from that navigation
 - ✅ Will still analyze current eligibility
 
 **Output when run in correct order:**
+
 ```
 ⚡ Page restored from bfcache!
    Navigation was instant (0ms)
@@ -267,28 +278,28 @@ Chrome 123+ provides the detailed `notRestoredReasons` API that shows exactly wh
 **API structure:**
 
 ```javascript
-const navEntry = performance.getEntriesByType('navigation')[0];
+const navEntry = performance.getEntriesByType("navigation")[0];
 if (navEntry.notRestoredReasons) {
   const reasons = navEntry.notRestoredReasons;
 
   // Page-level information
-  console.log('Blocked:', reasons.blocked);        // boolean
-  console.log('URL:', reasons.url);                // page URL
-  console.log('Frame ID:', reasons.id);            // frame identifier
-  console.log('Name:', reasons.name);              // frame name (if any)
-  console.log('Source:', reasons.src);             // frame source (if iframe)
+  console.log("Blocked:", reasons.blocked); // boolean
+  console.log("URL:", reasons.url); // page URL
+  console.log("Frame ID:", reasons.id); // frame identifier
+  console.log("Name:", reasons.name); // frame name (if any)
+  console.log("Source:", reasons.src); // frame source (if iframe)
 
   // Array of NotRestoredReasonDetails objects
-  reasons.reasons.forEach(detail => {
-    console.log('Reason:', detail.reason);         // blocking reason
-    console.log('Source:', detail.source);         // where it came from
+  reasons.reasons.forEach((detail) => {
+    console.log("Reason:", detail.reason); // blocking reason
+    console.log("Source:", detail.source); // where it came from
   });
 
   // Nested iframes
-  reasons.children.forEach(child => {
-    console.log('Child URL:', child.url);
-    console.log('Child blocked:', child.blocked);
-    console.log('Child reasons:', child.reasons);
+  reasons.children.forEach((child) => {
+    console.log("Child URL:", child.url);
+    console.log("Child blocked:", child.blocked);
+    console.log("Child reasons:", child.reasons);
   });
 }
 ```
@@ -299,20 +310,20 @@ if (navEntry.notRestoredReasons) {
 
 Each blocking reason is a `NotRestoredReasonDetails` object with these properties:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `reason` | string | The specific blocking reason (e.g., "WebSocket", "unload-listener") |
+| Property | Type   | Description                                                                |
+| -------- | ------ | -------------------------------------------------------------------------- |
+| `reason` | string | The specific blocking reason (e.g., "WebSocket", "unload-listener")        |
 | `source` | string | Source location: "UserAgentOnly" (browser), "JavaScript" (your code), etc. |
 
 **Common reason values:**
 
-| Reason | What it means |
-|--------|---------------|
-| `unload-listener` | Page has unload event listener |
-| `response-cache-control` | Cache-Control: no-store header |
-| `WebSocket` | Open WebSocket connection |
-| `IndexedDB` | Open IndexedDB transaction |
-| `BroadcastChannel` | Open BroadcastChannel |
+| Reason                    | What it means                              |
+| ------------------------- | ------------------------------------------ |
+| `unload-listener`         | Page has unload event listener             |
+| `response-cache-control`  | Cache-Control: no-store header             |
+| `WebSocket`               | Open WebSocket connection                  |
+| `IndexedDB`               | Open IndexedDB transaction                 |
+| `BroadcastChannel`        | Open BroadcastChannel                      |
 | `related-active-contents` | Related page (popup/iframe) blocks caching |
 
 **Example output interpretation:**
@@ -332,6 +343,7 @@ Each blocking reason is a `NotRestoredReasonDetails` object with these propertie
 ```
 
 This tells us:
+
 - ✅ Page was **not blocked** this time (blocked: false)
 - ❌ But a **WebSocket** connection was detected
 - 📍 It came from **JavaScript** code (not browser extension)
@@ -340,14 +352,17 @@ This tells us:
 ### Interpreting Your Results
 
 **Scenario 1: Fast back/forward (< 10ms)**
+
 ```
 Type: back_forward
 Duration: 8ms
 ✅ Page restored from bfcache
 ```
+
 ✅ **Excellent!** bfcache is working perfectly.
 
 **Scenario 2: Slow back/forward (> 100ms) with reasons**
+
 ```
 Type: back_forward
 Duration: 405ms
@@ -357,14 +372,17 @@ Blocking reasons:
 - WebSocket connection detected
 - Source: JavaScript
 ```
+
 ❌ **Action needed:** Your page has blockers preventing bfcache. Fix the listed issues.
 
 **Scenario 3: Blocked = false, but slow navigation**
+
 ```
 blocked: false
 Duration: 405ms
 Reasons: [WebSocket]
 ```
+
 ⚠️ **Important:** Even though `blocked: false`, the page wasn't cached on the **previous** navigation because of WebSocket. Fix it and test again with a fresh navigation cycle.
 
 ### Testing Workflow
@@ -386,6 +404,7 @@ To get accurate `notRestoredReasons` data:
    - Run the snippet after clicking back to see results
 
 **Chrome DevTools shortcut:**
+
 - DevTools → Application → Back/forward cache
 - Click "Test back/forward cache" button
 - Instantly see detailed blocking reasons
@@ -395,6 +414,7 @@ To get accurate `notRestoredReasons` data:
 The snippet displays detailed information about `NotRestoredReasonDetails` objects:
 
 **Blocking reasons format:**
+
 ```
 Blocking reasons:
 1. WebSocket
@@ -411,6 +431,7 @@ Blocking reasons:
 ```
 
 Each blocking reason shows:
+
 - **Reason**: The specific blocker (e.g., "WebSocket", "unload-listener")
 - **Source**: Where it comes from ("JavaScript", "UserAgentOnly")
 - **Context**: Helpful explanation and recommended fix
@@ -418,12 +439,12 @@ Each blocking reason shows:
 
 ### Browser Support
 
-| Browser | bfcache Support | NotRestoredReasons API |
-|---------|-----------------|------------------------|
-| Chrome 96+ | ✅ | ✅ (123+) |
-| Edge 96+ | ✅ | ✅ (123+) |
-| Safari 14+ | ✅ | ❌ |
-| Firefox 86+ | ✅ | ❌ |
+| Browser     | bfcache Support | NotRestoredReasons API |
+| ----------- | --------------- | ---------------------- |
+| Chrome 96+  | ✅              | ✅ (123+)              |
+| Edge 96+    | ✅              | ✅ (123+)              |
+| Safari 14+  | ✅              | ❌                     |
+| Firefox 86+ | ✅              | ❌                     |
 
 All modern browsers support bfcache, but diagnostics vary.
 
@@ -434,6 +455,7 @@ All modern browsers support bfcache, but diagnostics vary.
 **Real example from joanleon.dev when executed incorrectly:**
 
 **What happened:**
+
 1. User visited https://joanleon.dev/
 2. Clicked on a blog post
 3. Clicked browser Back button ← Navigation already happened
@@ -478,12 +500,14 @@ For complete analysis including bfcache restoration detection:
 ```
 
 **Why this output is incomplete:**
+
 - ❌ Missed the `pageshow` event with `persisted=true`
 - ❌ Cannot confirm if page was actually restored from bfcache
 - ✅ Still shows `NotRestoredReasons` (helpful for diagnosis)
 - ✅ Still shows current eligibility analysis
 
 **Diagnosis from available data:**
+
 1. ✅ **Good news**: No unload handlers, no Cache-Control issues
 2. ❌ **Problem**: WebSocket connection blocking bfcache
 3. 📊 **Impact**: 405ms reload vs. potential 0ms with bfcache
@@ -496,6 +520,7 @@ For complete analysis including bfcache restoration detection:
 **Correct workflow for joanleon.dev:**
 
 **What to do:**
+
 1. Visit https://joanleon.dev/
 2. **First**: Run the snippet ← Sets up event listeners
 3. Click on a blog post
@@ -535,20 +560,20 @@ For complete analysis including bfcache restoration detection:
 **Fix applied:**
 
 ```javascript
-let ws = new WebSocket('wss://example.com/updates');
+let ws = new WebSocket("wss://web.dev/updates");
 
 // Close connection when leaving page
-window.addEventListener('pagehide', () => {
+window.addEventListener("pagehide", () => {
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.close();
   }
 });
 
 // Reconnect after bfcache restore
-window.addEventListener('pageshow', (event) => {
+window.addEventListener("pageshow", (event) => {
   if (event.persisted) {
     // Page restored from bfcache, reconnect
-    ws = new WebSocket('wss://example.com/updates');
+    ws = new WebSocket("wss://web.dev/updates");
   }
 });
 ```
@@ -607,25 +632,25 @@ Track navigation timing with `performance.getEntriesByType('navigation')`:
 
 ```js copy
 // Track bfcache restoration in RUM
-window.addEventListener('pageshow', (event) => {
+window.addEventListener("pageshow", (event) => {
   if (event.persisted) {
     // Page restored from bfcache
-    gtag('event', 'bfcache_restoration', {
-      navigation_type: 'back_forward',
+    gtag("event", "bfcache_restoration", {
+      navigation_type: "back_forward",
       duration: 0,
     });
   }
 });
 
 // Track bfcache eligibility
-const navEntry = performance.getEntriesByType('navigation')[0];
+const navEntry = performance.getEntriesByType("navigation")[0];
 if (navEntry && navEntry.notRestoredReasons) {
   const blocked = navEntry.notRestoredReasons.blocked;
   const reasons = navEntry.notRestoredReasons.reasons || [];
 
-  gtag('event', 'bfcache_eligibility', {
+  gtag("event", "bfcache_eligibility", {
     blocked: blocked,
-    reasons: reasons.join(', '),
+    reasons: reasons.join(", "),
   });
 }
 ```

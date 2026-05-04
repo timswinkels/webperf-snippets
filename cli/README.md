@@ -44,13 +44,13 @@ npx webperf-snippets https://web.dev --json
 Single snippet:
 
 ```bash
-npx webperf-snippets https://example.com --snippet LCP-Subparts
+npx webperf-snippets https://web.dev --snippet LCP-Subparts
 ```
 
 CI gating:
 
 ```bash
-npx webperf-snippets https://example.com --budget-lcp 2500 --budget-cls 0.1
+npx webperf-snippets https://web.dev --budget-lcp 2500 --budget-cls 0.1
 ```
 
 ### Options
@@ -82,7 +82,7 @@ GitHub Actions, fail the PR if LCP exceeds 2.5s:
 - run: |
     npm install --no-save webperf-snippets playwright
     npx playwright install --with-deps chromium
-    npx webperf-snippets https://staging.example.com --budget-lcp 2500 --budget-cls 0.1
+    npx webperf-snippets https://staging.web.dev --budget-lcp 2500 --budget-cls 0.1
 ```
 
 ## Publishing
