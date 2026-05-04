@@ -3,12 +3,14 @@ import { parseArgs } from "node:util";
 import { loadSnippet } from "./load-snippet.js";
 import { runSnippets, VIEWPORT_PRESETS } from "./runner.js";
 import { cwvWorkflow } from "./workflows/cwv.js";
+import { auditWorkflow } from "./workflows/audit.js";
 import { nextSteps } from "./decision-tree.js";
 import { reportHuman } from "./reporters/human.js";
 import { reportJson } from "./reporters/json.js";
 
 const WORKFLOWS = {
   "core-web-vitals": cwvWorkflow,
+  audit: auditWorkflow,
 };
 
 const SNIPPET_ALIASES = {
@@ -18,6 +20,31 @@ const SNIPPET_ALIASES = {
   fonts: "Loading/Fonts-Preloaded-Loaded-and-used-above-the-fold",
   "Fonts-Preloaded-Loaded-and-used-above-the-fold":
     "Loading/Fonts-Preloaded-Loaded-and-used-above-the-fold",
+  // Tier 1 — Loading
+  "render-blocking": "Loading/Find-render-blocking-resources",
+  "Find-render-blocking-resources": "Loading/Find-render-blocking-resources",
+  "resource-hints": "Loading/Resource-Hints-Validation",
+  "Resource-Hints-Validation": "Loading/Resource-Hints-Validation",
+  "preload-scripts": "Loading/Validate-Preload-Async-Defer-Scripts",
+  "Validate-Preload-Async-Defer-Scripts": "Loading/Validate-Preload-Async-Defer-Scripts",
+  "priority-hints": "Loading/Priority-Hints-Audit",
+  "Priority-Hints-Audit": "Loading/Priority-Hints-Audit",
+  "critical-css": "Loading/Critical-CSS-Detection",
+  "Critical-CSS-Detection": "Loading/Critical-CSS-Detection",
+  ttfb: "Loading/TTFB-Sub-Parts",
+  "TTFB-Sub-Parts": "Loading/TTFB-Sub-Parts",
+  "script-parties": "Loading/First-And-Third-Party-Script-Info",
+  "First-And-Third-Party-Script-Info": "Loading/First-And-Third-Party-Script-Info",
+  "script-loading": "Loading/Script-Loading",
+  "Script-Loading": "Loading/Script-Loading",
+  // Tier 2 — Media
+  "lazy-atf": "Loading/Find-Above-The-Fold-Lazy-Loaded-Images",
+  "Find-Above-The-Fold-Lazy-Loaded-Images": "Loading/Find-Above-The-Fold-Lazy-Loaded-Images",
+  "lazy-conflict": "Loading/Find-Images-With-Lazy-and-Fetchpriority",
+  "Find-Images-With-Lazy-and-Fetchpriority": "Loading/Find-Images-With-Lazy-and-Fetchpriority",
+  "eager-below-fold": "Loading/Find-non-Lazy-Loaded-Images-outside-of-the-viewport",
+  "Find-non-Lazy-Loaded-Images-outside-of-the-viewport":
+    "Loading/Find-non-Lazy-Loaded-Images-outside-of-the-viewport",
 };
 
 const USAGE = `webperf-snippets <url> [options]
@@ -26,7 +53,13 @@ Run curated WebPerf Snippets headlessly via Playwright.
 
 Options:
   --workflow <name>     Workflow to run (default: core-web-vitals)
-  --snippet <name>      Run a single snippet (e.g. LCP, CLS, LCP-Subparts, fonts, or Category/Name)
+                        Workflows: core-web-vitals, audit
+  --snippet <name>      Run a single snippet by alias or Category/Name path
+                        Aliases: LCP, CLS, LCP-Subparts, fonts,
+                                 render-blocking, resource-hints, preload-scripts,
+                                 priority-hints, critical-css, ttfb,
+                                 script-parties, script-loading,
+                                 lazy-atf, lazy-conflict, eager-below-fold
   --json                Output JSON instead of formatted text
   --viewport <preset>   Viewport preset: mobile (default), tablet, desktop
   --wait <ms>           Post-load wait before evaluating (default: 3000)
@@ -37,8 +70,10 @@ Options:
 
 Examples:
   npx webperf-snippets https://web.dev
+  npx webperf-snippets https://example.com --workflow audit
   npx webperf-snippets https://example.com --json
   npx webperf-snippets https://example.com --snippet LCP-Subparts
+  npx webperf-snippets https://example.com --snippet render-blocking
   npx webperf-snippets https://example.com --snippet fonts
   npx webperf-snippets https://example.com --budget-lcp 2500
 `;
@@ -180,7 +215,10 @@ async function main() {
   }
 
   const anyError = payload.results.some((r) => r.status === "error");
-  process.exit(anyError ? 1 : 0);
+  const anyAuditViolation = payload.results.some(
+    (r) => Array.isArray(r.issues) && r.issues.some((i) => i.severity === "error"),
+  );
+  process.exit(anyError || anyAuditViolation ? 1 : 0);
 }
 
 main().catch((err) => {

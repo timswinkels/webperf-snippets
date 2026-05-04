@@ -72,13 +72,61 @@ function renderFontsResult(r) {
   return lines.join("\n");
 }
 
+function renderAuditResult(r) {
+  const lines = [];
+  const id = r.id ?? r.script;
+  const errors = (r.issues ?? []).filter((i) => i.severity === "error");
+  const warnings = (r.issues ?? []).filter((i) => i.severity === "warning");
+
+  const icon = errors.length ? "🔴" : warnings.length ? "🟡" : "🟢";
+  const countSuffix = r.count > 0 ? styleText("dim", ` (${r.count})`) : "";
+  lines.push(`  ${icon} ${id}${countSuffix}`);
+
+  if (r.issues?.length) {
+    for (const issue of r.issues) {
+      const color = issue.severity === "error" ? "red" : issue.severity === "warning" ? "yellow" : "blue";
+      const sym = issue.severity === "error" ? "✗" : issue.severity === "warning" ? "⚠" : "ℹ";
+      lines.push(`     ${styleText(color, sym)} ${issue.message}`);
+    }
+  } else {
+    lines.push(`     ${styleText("green", "✓")} No issues`);
+  }
+
+  const MAX_ITEMS = 10;
+  const items = r.items ?? [];
+  if (items.length > 0) {
+    lines.push("");
+    const shown = items.slice(0, MAX_ITEMS);
+    for (const item of shown) {
+      const name = item.shortName ?? item.resource ?? item.url ?? item.src ?? item.selector ?? "";
+      const tag = item.type ?? item.tag ?? item.strategy ?? "";
+      const timing = item.responseEndMs != null ? `${item.responseEndMs}ms` : item.durationMs != null ? `${item.durationMs}ms` : "";
+      const cols = [tag, name, timing].filter(Boolean).join("  ");
+      lines.push(`     ${styleText("dim", `· ${cols}`)}`);
+    }
+    if (items.length > MAX_ITEMS) {
+      lines.push(`     ${styleText("dim", `… and ${items.length - MAX_ITEMS} more`)}`);
+    }
+  }
+
+  if (r.reason) {
+    lines.push(`     ${styleText("dim", `↳ ${r.reason}`)}`);
+  }
+
+  return lines.join("\n");
+}
+
 function renderResult(r) {
   if (r.status === "error") {
     return `  ${styleText("red", "✗")} ${pad(r.id, 16)} ${styleText("dim", r.error)}`;
   }
 
-  if (Array.isArray(r.issues)) {
+  if (r.script === "Fonts-Preloaded-Loaded-and-used-above-the-fold") {
     return renderFontsResult(r);
+  }
+
+  if (Array.isArray(r.issues)) {
+    return renderAuditResult(r);
   }
 
   const icon = RATING_ICON[r.rating] ?? "·";
@@ -88,7 +136,7 @@ function renderResult(r) {
 
   let out = `  ${icon} ${pad(r.id, 16)} ${pad(valueText, 10)} ${pad(ratingText, 20)} ${detail}`;
 
-  if (r.details?.subParts) {
+  if (r.metric === "LCP" && r.details?.subParts) {
     const sp = r.details.subParts;
     const rows = [
       ["TTFB", sp.ttfb],

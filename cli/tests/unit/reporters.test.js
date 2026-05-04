@@ -71,7 +71,8 @@ describe("reportHuman", () => {
       navMs: 500,
       results: [
         {
-          id: "Fonts-Preloaded-Loaded-and-used-above-the-fold",
+          id: "fonts",
+          script: "Fonts-Preloaded-Loaded-and-used-above-the-fold",
           status: "ok",
           count: 2,
           details: { preloadedCount: 1, loadedCount: 2, usedAboveFoldCount: 2, preloadedNotUsedCount: 1, usedNotPreloadedCount: 0 },
@@ -94,6 +95,7 @@ describe("reportHuman", () => {
       results: [
         {
           id: "Fonts-Preloaded-Loaded-and-used-above-the-fold",
+          script: "Fonts-Preloaded-Loaded-and-used-above-the-fold",
           status: "ok",
           count: 1,
           details: { preloadedCount: 1, loadedCount: 1, usedAboveFoldCount: 1, preloadedNotUsedCount: 0, usedNotPreloadedCount: 0 },
@@ -105,5 +107,69 @@ describe("reportHuman", () => {
     };
     const output = reportHuman(payload);
     expect(output).toContain("Font loading looks optimized");
+  });
+
+  it("renders audit result with no issues as passing", () => {
+    const payload = {
+      url: "https://example.com",
+      navMs: 500,
+      results: [
+        {
+          id: "render-blocking",
+          script: "Find-render-blocking-resources",
+          status: "ok",
+          count: 0,
+          details: { totalBlockingUntilMs: 0, totalSizeBytes: 0, byType: {} },
+          items: [],
+          issues: [],
+        },
+      ],
+      pageErrors: [],
+    };
+    const output = reportHuman(payload);
+    expect(output).toContain("render-blocking");
+    expect(output).toContain("No issues");
+  });
+
+  it("renders audit result with error issues showing the message", () => {
+    const payload = {
+      url: "https://example.com",
+      navMs: 500,
+      results: [
+        {
+          id: "lazy-conflict",
+          script: "Find-Images-With-Lazy-and-Fetchpriority",
+          status: "ok",
+          count: 2,
+          items: [],
+          issues: [{ severity: "error", message: "2 element(s) have conflicting loading=\"lazy\" and fetchpriority=\"high\"" }],
+        },
+      ],
+      pageErrors: [],
+    };
+    const output = reportHuman(payload);
+    expect(output).toContain("lazy-conflict");
+    expect(output).toContain("2 element(s) have conflicting");
+  });
+
+  it("renders audit result with warning issues", () => {
+    const payload = {
+      url: "https://example.com",
+      navMs: 500,
+      results: [
+        {
+          id: "eager-below-fold",
+          script: "Find-non-Lazy-Loaded-Images-outside-of-the-viewport",
+          status: "ok",
+          count: 5,
+          items: [],
+          issues: [{ severity: "warning", message: "5 image(s) outside the viewport are missing loading=\"lazy\"" }],
+        },
+      ],
+      pageErrors: [],
+    };
+    const output = reportHuman(payload);
+    expect(output).toContain("eager-below-fold");
+    expect(output).toContain("5 image(s) outside the viewport");
   });
 });

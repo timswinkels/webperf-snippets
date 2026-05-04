@@ -154,5 +154,8 @@
       durationMs: Math.round(r.duration),
       sizeBytes: r.size,
     })),
+    issues: blockingResources.length > 0
+      ? [{ severity: "error", message: `${blockingResources.length} render-blocking resource(s) delay rendering until ${Math.round(lastBlockingEnd)}ms` }]
+      : [],
   };
 })();
