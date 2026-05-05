@@ -142,6 +142,16 @@ Skills are compatible with [Chrome DevTools MCP](https://github.com/modelcontext
 
 **Supported agents**: Claude Code, Cursor, OpenCode, Gemini CLI, VS Code extensions, and [many more](https://agentskills.io/).
 
+## CLI
+
+The repository includes a headless CLI (`cli/`) that runs WebPerf Snippets via Playwright — useful for CI pipelines and performance budgeting without copy-pasting into DevTools.
+
+```bash
+npx webperf-snippets https://web.dev --budget-lcp 2500 --budget-cls 0.1
+```
+
+See [`cli/README.md`](./cli/README.md) for installation, usage, and CI integration. The CLI is published to npm as [`webperf-snippets`](https://www.npmjs.com/package/webperf-snippets) via a tag-based release workflow — pushing a `cli-v*` tag triggers the publish pipeline.
+
 ## Documentation
 
 Visit **[webperf-snippets.nucliweb.net](https://webperf-snippets.nucliweb.net)** for the full documentation with all snippets.

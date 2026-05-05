@@ -3,15 +3,13 @@ import { Snippet } from '../../components/Snippet'
 
 # Find render-blocking resources
 
-### Overview
-
 Identifies resources that block the browser from rendering the page. These resources must be fully downloaded and processed before the browser can display any content, directly impacting First Contentful Paint (FCP) and Largest Contentful Paint (LCP).
 
-**Why this matters:**
+### Why this matters
 
 Render-blocking resources are the primary cause of slow initial page renders. Users see a blank white screen while CSS and JavaScript files download and parse. On slow connections or mobile networks, this can add several seconds to your load time. Eliminating or deferring render-blocking resources is one of the highest-impact optimizations you can make.
 
-**What are render-blocking resources?**
+### What are render-blocking resources?
 
 | Resource Type | When it blocks rendering |
 |---------------|-------------------------|
@@ -19,14 +17,14 @@ Render-blocking resources are the primary cause of slow initial page renders. Us
 | **JavaScript** | Scripts without `async` or `defer` in `<head>` block parsing and rendering |
 | **Fonts** | `@font-face` fonts block text rendering until loaded |
 
-**Impact on performance:**
+### Impact on performance
 
 - Delays First Contentful Paint (FCP)
 - Can delay Largest Contentful Paint (LCP)
 - Users see a blank page while resources load
 - Particularly harmful on slow connections
 
-**Render-Blocking Timeline:**
+### Render-blocking timeline
 
 ```mermaid
 sequenceDiagram
@@ -59,15 +57,15 @@ sequenceDiagram
     Note over Browser,Render: User sees content
 ```
 
-> **Browser Support:** The `renderBlockingStatus` property is currently Chromium-only (Chrome 107+, Edge 107+, Opera 93+). Firefox and Safari don't support this API yet.
+> **Browser support:** The `renderBlockingStatus` property is currently Chromium-only (Chrome 107+, Edge 107+, Opera 93+). Firefox and Safari don't support this API yet.
 
 ### Snippet
 
 <Snippet code={snippet} />
 
-### Understanding the Results
+### Understanding the results
 
-**Summary Metrics:**
+### Summary metrics
 
 | Metric | Description |
 |--------|-------------|
@@ -76,7 +74,7 @@ sequenceDiagram
 | **Total size** | Combined transfer size of all blocking resources |
 | **By type** | Breakdown by resource type (script, link/css, font) |
 
-**Timeline Visualization:**
+### Timeline visualization
 
 Shows each resource with:
 - Resource type
@@ -86,7 +84,7 @@ Shows each resource with:
 
 Resources are sorted by completion time (latest first), so you can see which resource is the last to complete and thus determines when rendering can start.
 
-### Optimization Decision Tree
+### Optimization decision tree
 
 ```mermaid
 flowchart TD
@@ -116,9 +114,9 @@ flowchart TD
     style Preload fill:#E5FFE5
 ```
 
-### Common Render-Blocking Patterns
+### Common render-blocking patterns
 
-**Scripts in `<head>` without defer/async:**
+### Scripts in `<head>` without defer/async
 
 ```html
 <!-- ❌ Render-blocking -->
@@ -132,7 +130,7 @@ flowchart TD
 </head>
 ```
 
-**External stylesheets:**
+### External stylesheets
 
 ```html
 <!-- ❌ Render-blocking (but often necessary) -->
@@ -143,7 +141,7 @@ flowchart TD
 <noscript><link rel="stylesheet" href="non-critical.css"></noscript>
 ```
 
-**Web fonts:**
+### Web fonts
 
 ```css
 /* ❌ Blocks text rendering */
@@ -160,7 +158,7 @@ flowchart TD
 }
 ```
 
-### Further Reading
+### Further reading
 
 - [Eliminate render-blocking resources](https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources) | Chrome Developers
 - [Render-blocking CSS](https://web.dev/articles/critical-rendering-path/render-blocking-css) | web.dev

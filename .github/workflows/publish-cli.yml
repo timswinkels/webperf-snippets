@@ -1,14 +1,16 @@
-name: CI
+name: Publish CLI
 
 on:
-  pull_request:
   push:
-    branches:
-      - main
+    tags:
+      - 'cli-v*'
 
 jobs:
-  validate:
+  publish:
     runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -19,18 +21,10 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-
-      - name: Check consistency
-        run: npm run check:consistency
 
       - name: Run unit tests
         run: npm run test:unit --prefix cli
@@ -41,3 +35,12 @@ jobs:
 
       - name: Run E2E tests
         run: npm run test:e2e --prefix cli
+
+      - name: Prepare snippets for publishing
+        run: cp -r snippets cli/
+
+      - name: Publish to npm
+        run: npm publish
+        working-directory: cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
