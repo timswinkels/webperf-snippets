@@ -2,6 +2,9 @@
 
 Run curated [WebPerf Snippets](https://webperf-snippets.nucliweb.net) headlessly via Playwright. Diagnose Core Web Vitals beyond what Lighthouse exposes and gate CI on real performance budgets.
 
+<img width="1820" height="1442" alt="webperf-snippets-CLI" src="https://github.com/user-attachments/assets/af7e6b02-8877-407e-87a4-db063468b5fb" />
+
+
 > **Status:** v0.1 (MVP). Core Web Vitals workflow only. See [Roadmap](#roadmap) for what's next.
 
 ## Why
