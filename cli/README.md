@@ -5,7 +5,7 @@ Run curated [WebPerf Snippets](https://webperf-snippets.nucliweb.net) headlessly
 <img width="1820" height="1442" alt="webperf-snippets-CLI" src="https://github.com/user-attachments/assets/af7e6b02-8877-407e-87a4-db063468b5fb" />
 
 
-> **Status:** v0.1 (MVP). Core Web Vitals workflow only. See [Roadmap](#roadmap) for what's next.
+> **Status:** v0.2. Core Web Vitals, loading audit, and structural checks. See [Roadmap](#roadmap) for what's next.
 
 ## Why
 
@@ -38,6 +38,24 @@ Run the default Core Web Vitals workflow (LCP + CLS, plus LCP-Subparts if LCP > 
 npx webperf-snippets https://web.dev
 ```
 
+Loading audit (TTFB, FCP, render-blocking, scripts, fonts):
+
+```bash
+npx webperf-snippets https://web.dev --workflow loading
+```
+
+Structural checks for CI (render-blocking, fonts, priority hints, resource hints):
+
+```bash
+npx webperf-snippets https://web.dev --workflow audit
+```
+
+Markdown output for PR comments:
+
+```bash
+npx webperf-snippets https://web.dev --markdown
+```
+
 JSON output (for piping into `jq` or CI):
 
 ```bash
@@ -50,6 +68,12 @@ Single snippet:
 npx webperf-snippets https://web.dev --snippet LCP-Subparts
 ```
 
+Synthetic INP measurement with an interaction script:
+
+```bash
+npx webperf-snippets https://web.dev --snippet INP --interact-script interactions.json
+```
+
 CI gating:
 
 ```bash
@@ -58,16 +82,40 @@ npx webperf-snippets https://web.dev --budget-lcp 2500 --budget-cls 0.1
 
 ### Options
 
-| Option                | Description                                                |
-| --------------------- | ---------------------------------------------------------- |
-| `--workflow <name>`   | Workflow to run. Default: `core-web-vitals`.               |
-| `--snippet <name>`    | Run a single snippet (`LCP`, `CLS`, or `Category/Name`).   |
-| `--json`              | Output JSON instead of formatted text.                     |
-| `--wait <ms>`         | Post-load wait before evaluating snippets. Default: `3000`.|
-| `--budget-lcp <ms>`   | Exit `1` if LCP exceeds this value.                        |
-| `--budget-cls <score>`| Exit `1` if CLS exceeds this value.                        |
-| `--headed`            | Show the browser window (debug).                           |
-| `-h, --help`          | Show help.                                                 |
+| Option                       | Description                                                            |
+| ---------------------------- | ---------------------------------------------------------------------- |
+| `--workflow <name>`          | Workflow to run. Default: `core-web-vitals`. Options: `core-web-vitals`, `loading`, `audit`. |
+| `--snippet <name>`           | Run a single snippet by alias or `Category/Name` path.                 |
+| `--json`                     | Output JSON instead of formatted text.                                 |
+| `--markdown`                 | Output GitHub-renderable markdown (for PR comments).                   |
+| `--viewport <preset>`        | Viewport preset: `mobile` (default), `tablet`, `desktop`.             |
+| `--wait <ms>`                | Post-load wait before evaluating snippets. Default: `3000`.            |
+| `--interact-script <path>`   | JSON file with interactions to run before evaluation (for INP).        |
+| `--budget-lcp <ms>`          | Exit `1` if LCP exceeds this value.                                    |
+| `--budget-cls <score>`       | Exit `1` if CLS exceeds this value.                                    |
+| `--verbose`                  | Show all items, including passing checks.                              |
+| `--headed`                   | Show the browser window (debug).                                       |
+| `-h, --help`                 | Show help.                                                             |
+
+### Snippet aliases
+
+| Alias              | Snippet                                        |
+| ------------------ | ---------------------------------------------- |
+| `LCP`              | CoreWebVitals/LCP                              |
+| `CLS`              | CoreWebVitals/CLS                              |
+| `LCP-Subparts`     | CoreWebVitals/LCP-Subparts                     |
+| `fonts`            | Loading/Fonts-Preloaded-Loaded-and-used-above-the-fold |
+| `render-blocking`  | Loading/Find-render-blocking-resources         |
+| `resource-hints`   | Loading/Resource-Hints-Validation              |
+| `preload-scripts`  | Loading/Validate-Preload-Async-Defer-Scripts   |
+| `priority-hints`   | Loading/Priority-Hints-Audit                   |
+| `critical-css`     | Loading/Critical-CSS-Detection                 |
+| `ttfb`             | Loading/TTFB-Sub-Parts                         |
+| `script-parties`   | Loading/First-And-Third-Party-Script-Info      |
+| `script-loading`   | Loading/Script-Loading                         |
+| `lazy-atf`         | Loading/Find-Above-The-Fold-Lazy-Loaded-Images |
+| `lazy-conflict`    | Loading/Find-Images-With-Lazy-and-Fetchpriority |
+| `eager-below-fold` | Loading/Find-non-Lazy-Loaded-Images-outside-of-the-viewport |
 
 ### Exit codes
 
@@ -115,17 +163,16 @@ Tag protection rules restrict who can push `cli-v*` tags. Configure them under *
 
 The `NPM_TOKEN` secret must be set in the repository settings with publish access to the `webperf-snippets` npm package.
 
-## Known limitations (v0.1)
+## Known limitations
 
-- **No INP**: INP requires real user interactions. v0.2 will support synthetic interaction scripts.
 - **CLS in headless is conservative**: layout shifts that only happen on scroll are missed unless you script the scroll.
 - **First navigation only**: each `webperf-snippets` invocation runs one URL. SPAs need the post-route URL passed directly.
-- **Decision-tree follow-ups re-navigate**: when a follow-up snippet fires (e.g. LCP-Subparts), the page is loaded again. v0.2 will share a single page session.
+- **Synthetic INP ≠ field INP**: `--interact-script` measures handler latency for a single scripted event. Real INP reflects the worst interaction across all user sessions — use RUM for field data.
 
 ## Roadmap
 
-- v0.2: Loading workflow (TTFB, FCP, render-blocking, scripts, fonts), shared page session, synthetic interactions for INP.
-- v0.3: Markdown reporter for PR comments, GitHub Action wrapper.
+- ~~v0.2: Loading workflow (TTFB, FCP, render-blocking, scripts, fonts), shared page session, synthetic interactions for INP, markdown reporter for PR comments.~~ ✓ Released
+- v0.3: GitHub Action wrapper.
 - v0.4: Auth flows (login + measure logged-in pages), CrUX field-data enrichment.
 
 ## How it works
