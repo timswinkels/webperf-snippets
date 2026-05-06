@@ -67,6 +67,8 @@ Options:
   --wait <ms>           Post-load wait before evaluating (default: 3000)
   --budget-lcp <ms>     Exit 1 if LCP exceeds this value
   --budget-cls <score>  Exit 1 if CLS exceeds this value
+  --interact-script <path>  JSON file with interactions to run before evaluation
+                            Actions: scroll, click, hover, type, wait
   --verbose             Show all items, even for passing checks
   --headed              Show the browser window (debug)
   -h, --help            Show this help
@@ -79,6 +81,7 @@ Examples:
   npx webperf-snippets https://web.dev --snippet render-blocking
   npx webperf-snippets https://web.dev --snippet fonts
   npx webperf-snippets https://web.dev --budget-lcp 2500
+  npx webperf-snippets https://web.dev --snippet INP --interact-script interactions.json
 `;
 
 function fail(message, code = 2) {
@@ -124,6 +127,7 @@ async function main() {
         "budget-lcp": { type: "string" },
         "budget-cls": { type: "string" },
         viewport: { type: "string" },
+        "interact-script": { type: "string" },
         verbose: { type: "boolean" },
         headed: { type: "boolean" },
         help: { type: "boolean", short: "h" },
@@ -154,15 +158,17 @@ async function main() {
     fail(`Unknown viewport preset: "${viewportName}". Choose from: ${Object.keys(VIEWPORT_PRESETS).join(", ")}`);
   }
 
+  const interactScript = values["interact-script"];
+
   let payload;
   if (values.snippet) {
     const items = buildSnippetItem(values);
-    payload = await runSnippets({ url, items, waitMs, headless: !values.headed, viewport });
+    payload = await runSnippets({ url, items, waitMs, headless: !values.headed, viewport, interactScript });
   } else {
     const workflowName = values.workflow ?? "core-web-vitals";
     const workflow = WORKFLOWS[workflowName];
     if (!workflow) fail(`Unknown workflow: ${workflowName}`);
-    payload = await runMeasurement({ url, workflow, rules: RULES, waitMs, headless: !values.headed, viewport });
+    payload = await runMeasurement({ url, workflow, rules: RULES, waitMs, headless: !values.headed, viewport, interactScript });
   }
 
   const output = values.json ? reportJson(payload) : reportHuman({ ...payload, verbose: values.verbose });

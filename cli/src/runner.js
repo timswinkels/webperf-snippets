@@ -1,5 +1,6 @@
 import { chromium } from "playwright";
 import { loadSnippet } from "./load-snippet.js";
+import { runInteractions } from "./interactions.js";
 
 export const VIEWPORT_PRESETS = {
   mobile: { width: 375, height: 812 },
@@ -44,6 +45,7 @@ export async function runSnippets({
   headless = true,
   viewport = VIEWPORT_PRESETS.mobile,
   navTimeout = DEFAULT_NAV_TIMEOUT,
+  interactScript,
 }) {
   const browser = await chromium.launch({ headless });
   try {
@@ -55,6 +57,7 @@ export async function runSnippets({
     await page.goto(url, { waitUntil: "load", timeout: navTimeout });
     if (waitMs > 0) await page.waitForTimeout(waitMs);
     const navMs = Date.now() - navStart;
+    if (interactScript) await runInteractions(page, interactScript);
     const results = await evaluateItems(page, items);
     return { url, navMs, results, pageErrors };
   } finally {
@@ -70,6 +73,7 @@ export async function runMeasurement({
   headless = true,
   viewport = VIEWPORT_PRESETS.mobile,
   navTimeout = DEFAULT_NAV_TIMEOUT,
+  interactScript,
 }) {
   const browser = await chromium.launch({ headless });
   try {
@@ -82,6 +86,7 @@ export async function runMeasurement({
     await page.goto(url, { waitUntil: "load", timeout: navTimeout });
     if (waitMs > 0) await page.waitForTimeout(waitMs);
     const navMs = Date.now() - navStart;
+    if (interactScript) await runInteractions(page, interactScript);
 
     const items = workflow.steps.map((step) => ({
       id: step.id,
