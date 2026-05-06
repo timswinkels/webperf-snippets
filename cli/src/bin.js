@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
 import { loadSnippet } from "./load-snippet.js";
-import { runSnippets, VIEWPORT_PRESETS } from "./runner.js";
+import { runSnippets, runMeasurement, VIEWPORT_PRESETS } from "./runner.js";
 import { cwvWorkflow } from "./workflows/cwv.js";
 import { auditWorkflow } from "./workflows/audit.js";
-import { nextSteps } from "./decision-tree.js";
+import { RULES } from "./decision-tree.js";
 import { reportHuman } from "./reporters/human.js";
 import { reportJson } from "./reporters/json.js";
 
@@ -88,19 +88,9 @@ function resolveSnippetPath(name) {
   return SNIPPET_ALIASES[name] ?? name;
 }
 
-function buildItems(values) {
-  if (values.snippet) {
-    const path = resolveSnippetPath(values.snippet);
-    return [{ id: values.snippet, path, source: loadSnippet(path) }];
-  }
-  const workflowName = values.workflow ?? "core-web-vitals";
-  const workflow = WORKFLOWS[workflowName];
-  if (!workflow) fail(`Unknown workflow: ${workflowName}`);
-  return workflow.steps.map((step) => ({
-    id: step.id,
-    path: step.path,
-    source: loadSnippet(step.path),
-  }));
+function buildSnippetItem(values) {
+  const path = resolveSnippetPath(values.snippet);
+  return [{ id: values.snippet, path, source: loadSnippet(path) }];
 }
 
 function checkBudgets(results, values) {
@@ -155,7 +145,6 @@ async function main() {
     process.exit(2);
   }
 
-  const items = buildItems(values);
   const waitMs = values.wait ? Number(values.wait) : 3000;
   const viewportName = values.viewport ?? "mobile";
   const viewport = VIEWPORT_PRESETS[viewportName];
@@ -163,46 +152,16 @@ async function main() {
     fail(`Unknown viewport preset: "${viewportName}". Choose from: ${Object.keys(VIEWPORT_PRESETS).join(", ")}`);
   }
 
-  const initial = await runSnippets({
-    url,
-    items,
-    waitMs,
-    headless: !values.headed,
-    viewport,
-  });
-
-  // Apply decision tree to spawn follow-up steps.
-  const followUps = nextSteps(initial.results);
-  let followUpRun = { results: [], pageErrors: [] };
-  if (followUps.length > 0) {
-    const followItems = followUps.map((f) => ({
-      id: f.id,
-      path: f.path,
-      source: loadSnippet(f.path),
-      reason: f.reason,
-    }));
-    // v0.1 limitation: follow-ups re-navigate. Acceptable for now; consolidate
-    // into a single page session in v0.2 if perf becomes a problem.
-    followUpRun = await runSnippets({
-      url,
-      items: followItems,
-      waitMs,
-      headless: !values.headed,
-      viewport,
-    });
-    // Carry forward the human-readable reason so reporters can show it.
-    followUpRun.results = followUpRun.results.map((r) => {
-      const f = followUps.find((x) => x.id === r.id);
-      return f ? { ...r, reason: f.reason } : r;
-    });
+  let payload;
+  if (values.snippet) {
+    const items = buildSnippetItem(values);
+    payload = await runSnippets({ url, items, waitMs, headless: !values.headed, viewport });
+  } else {
+    const workflowName = values.workflow ?? "core-web-vitals";
+    const workflow = WORKFLOWS[workflowName];
+    if (!workflow) fail(`Unknown workflow: ${workflowName}`);
+    payload = await runMeasurement({ url, workflow, rules: RULES, waitMs, headless: !values.headed, viewport });
   }
-
-  const payload = {
-    url,
-    navMs: initial.navMs,
-    results: [...initial.results, ...followUpRun.results],
-    pageErrors: [...initial.pageErrors, ...(followUpRun.pageErrors ?? [])],
-  };
 
   const output = values.json ? reportJson(payload) : reportHuman({ ...payload, verbose: values.verbose });
   process.stdout.write(output + "\n");

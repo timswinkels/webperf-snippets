@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { loadSnippet } from "./load-snippet.js";
 
 export const VIEWPORT_PRESETS = {
   mobile: { width: 375, height: 812 },
@@ -15,6 +16,27 @@ function toExpression(source) {
   return source.trim().replace(/;\s*$/, "");
 }
 
+async function evaluateItems(page, items) {
+  const results = [];
+  for (const item of items) {
+    try {
+      const result = await page.evaluate(toExpression(item.source));
+      if (result && typeof result === "object") {
+        results.push({ id: item.id, ...result });
+      } else {
+        results.push({
+          id: item.id,
+          status: "error",
+          error: "Snippet did not return an object — check the IIFE return statement",
+        });
+      }
+    } catch (err) {
+      results.push({ id: item.id, status: "error", error: err.message });
+    }
+  }
+  return results;
+}
+
 export async function runSnippets({
   url,
   items,
@@ -27,7 +49,32 @@ export async function runSnippets({
   try {
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
+    const pageErrors = [];
+    page.on("pageerror", (err) => pageErrors.push(err.message));
+    const navStart = Date.now();
+    await page.goto(url, { waitUntil: "load", timeout: navTimeout });
+    if (waitMs > 0) await page.waitForTimeout(waitMs);
+    const navMs = Date.now() - navStart;
+    const results = await evaluateItems(page, items);
+    return { url, navMs, results, pageErrors };
+  } finally {
+    await browser.close();
+  }
+}
 
+export async function runMeasurement({
+  url,
+  workflow,
+  rules = [],
+  waitMs = 3000,
+  headless = true,
+  viewport = VIEWPORT_PRESETS.mobile,
+  navTimeout = DEFAULT_NAV_TIMEOUT,
+}) {
+  const browser = await chromium.launch({ headless });
+  try {
+    const context = await browser.newContext({ viewport });
+    const page = await context.newPage();
     const pageErrors = [];
     page.on("pageerror", (err) => pageErrors.push(err.message));
 
@@ -36,25 +83,35 @@ export async function runSnippets({
     if (waitMs > 0) await page.waitForTimeout(waitMs);
     const navMs = Date.now() - navStart;
 
-    const results = [];
-    for (const item of items) {
-      try {
-        const result = await page.evaluate(toExpression(item.source));
-        if (result && typeof result === "object") {
-          results.push({ id: item.id, ...result });
-        } else {
-          results.push({
-            id: item.id,
-            status: "error",
-            error: "Snippet did not return an object — check the IIFE return statement",
-          });
-        }
-      } catch (err) {
-        results.push({ id: item.id, status: "error", error: err.message });
+    const items = workflow.steps.map((step) => ({
+      id: step.id,
+      path: step.path,
+      source: loadSnippet(step.path),
+    }));
+    const initialResults = await evaluateItems(page, items);
+
+    const followUps = [];
+    for (const result of initialResults) {
+      for (const rule of rules) {
+        if (rule.when(result)) followUps.push({ ...rule.append, reason: rule.reason });
       }
     }
 
-    return { url, navMs, results, pageErrors };
+    let followUpResults = [];
+    if (followUps.length > 0) {
+      const followItems = followUps.map((f) => ({
+        id: f.id,
+        path: f.path,
+        source: loadSnippet(f.path),
+      }));
+      const raw = await evaluateItems(page, followItems);
+      followUpResults = raw.map((r) => {
+        const f = followUps.find((x) => x.id === r.id);
+        return f ? { ...r, reason: f.reason } : r;
+      });
+    }
+
+    return { url, navMs, results: [...initialResults, ...followUpResults], pageErrors };
   } finally {
     await browser.close();
   }

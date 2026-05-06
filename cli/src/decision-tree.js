@@ -1,6 +1,6 @@
 // Declarative follow-ups: if a result matches the predicate, append the step.
 // Mirrors the WORKFLOWS.md decision trees from the snippet catalogue.
-const RULES = [
+export const RULES = [
   {
     when: (r) => r.id === "LCP" && r.status === "ok" && r.value > 2500,
     append: { id: "LCP-Subparts", path: "CoreWebVitals/LCP-Subparts" },
