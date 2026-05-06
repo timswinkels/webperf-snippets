@@ -4,6 +4,7 @@ import { loadSnippet } from "./load-snippet.js";
 import { runSnippets, runMeasurement, VIEWPORT_PRESETS } from "./runner.js";
 import { cwvWorkflow } from "./workflows/cwv.js";
 import { auditWorkflow } from "./workflows/audit.js";
+import { loadingWorkflow } from "./workflows/loading.js";
 import { RULES } from "./decision-tree.js";
 import { reportHuman } from "./reporters/human.js";
 import { reportJson } from "./reporters/json.js";
@@ -11,6 +12,7 @@ import { reportJson } from "./reporters/json.js";
 const WORKFLOWS = {
   "core-web-vitals": cwvWorkflow,
   audit: auditWorkflow,
+  loading: loadingWorkflow,
 };
 
 const SNIPPET_ALIASES = {
@@ -53,7 +55,7 @@ Run curated WebPerf Snippets headlessly via Playwright.
 
 Options:
   --workflow <name>     Workflow to run (default: core-web-vitals)
-                        Workflows: core-web-vitals, audit
+                        Workflows: core-web-vitals, audit, loading
   --snippet <name>      Run a single snippet by alias or Category/Name path
                         Aliases: LCP, CLS, LCP-Subparts, fonts,
                                  render-blocking, resource-hints, preload-scripts,
