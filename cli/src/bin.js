@@ -8,6 +8,7 @@ import { loadingWorkflow } from "./workflows/loading.js";
 import { RULES } from "./decision-tree.js";
 import { reportHuman } from "./reporters/human.js";
 import { reportJson } from "./reporters/json.js";
+import { reportMarkdown } from "./reporters/markdown.js";
 
 const WORKFLOWS = {
   "core-web-vitals": cwvWorkflow,
@@ -63,6 +64,7 @@ Options:
                                  script-parties, script-loading,
                                  lazy-atf, lazy-conflict, eager-below-fold
   --json                Output JSON instead of formatted text
+  --markdown            Output GitHub-renderable markdown (for PR comments)
   --viewport <preset>   Viewport preset: mobile (default), tablet, desktop
   --wait <ms>           Post-load wait before evaluating (default: 3000)
   --budget-lcp <ms>     Exit 1 if LCP exceeds this value
@@ -123,6 +125,7 @@ async function main() {
         workflow: { type: "string" },
         snippet: { type: "string" },
         json: { type: "boolean" },
+        markdown: { type: "boolean" },
         wait: { type: "string" },
         "budget-lcp": { type: "string" },
         "budget-cls": { type: "string" },
@@ -171,7 +174,14 @@ async function main() {
     payload = await runMeasurement({ url, workflow, rules: RULES, waitMs, headless: !values.headed, viewport, interactScript });
   }
 
-  const output = values.json ? reportJson(payload) : reportHuman({ ...payload, verbose: values.verbose });
+  let output;
+  if (values.markdown) {
+    output = reportMarkdown(payload);
+  } else if (values.json) {
+    output = reportJson(payload);
+  } else {
+    output = reportHuman({ ...payload, verbose: values.verbose });
+  }
   process.stdout.write(output + "\n");
 
   // Exit codes.
